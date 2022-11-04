@@ -41,7 +41,14 @@ class Account extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
+    public function group_account()
+    {
+        return $this->hasOne(Group::class);
+    }
+    public function bill()
+    {
+        return $this->hasMany(Bill::class);
+    }
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *

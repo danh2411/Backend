@@ -2,6 +2,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClientController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,13 +15,13 @@ use App\Http\Controllers\AuthController;
 */
 // Route::group([
 //     'middleware' => ['api','cors'],
-    
+
 // ], function ($router) {
 //     Route::post('/login', [AuthController::class, 'login']);
 //     Route::post('/register', [AuthController::class, 'register']);
 //     Route::post('/logout', [AuthController::class, 'logout']);
 //     Route::post('/refresh', [AuthController::class, 'refresh']);
-//     Route::get('/user-profile', [AuthController::class, 'userProfile']);    
+//     Route::get('/user-profile', [AuthController::class, 'userProfile']);
 // });
 
 
@@ -29,6 +30,9 @@ Route::middleware(['cors'])->group(function($router) {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::get('/user-profile', [AuthController::class, 'userProfile']); 
-    Route::post('/changepass', [AuthController::class, 'changePassWord']);     
+    Route::get('/user-profile', [AuthController::class, 'userProfile']);
+    Route::post('/changepass', [AuthController::class, 'changePassWord']);
+});
+Route::middleware(['cors'])->group(function($router) {
+    Route::post('/client/createAdd', [ClientController::class,'create']);
 });
