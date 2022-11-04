@@ -35,4 +35,7 @@ Route::middleware(['cors'])->group(function($router) {
 });
 Route::middleware(['cors'])->group(function($router) {
     Route::post('/client/createAdd', [ClientController::class,'create']);
+    Route::post('/client/edit/id={id}', [ClientController::class,'edit']);
+    Route::post('/client/hiden/id={id}', [ClientController::class,'hiden']);
+    Route::get('/client/client-profile', [ClientController::class, 'clientProfile']);
 });
