@@ -27,10 +27,10 @@ class RoomController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'name_room' => 'required',
+            'name_room' => 'required|string',
             'typ_room' => 'required',
-            'price' => 'required',
-            'capacity' => 'required'
+            'price' => 'required|integer',
+            'capacity' => 'required|integer',
 
             
         ]);
@@ -53,10 +53,10 @@ class RoomController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'name_room' => 'required',
+            'name_room' => 'required|string',
             'typ_room' => 'required',
-            'price' => 'required',
-            'capacity' => 'required'
+            'price' => 'required|integer',
+            'capacity' => 'required|integer',
         ]);
 
         if ($validator->fails()) {

@@ -17,9 +17,9 @@ class BillController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
 
-            'total_room_rate' => 'required',
-            'total_service_fee' => 'required',
-            'total_money' => 'required'
+            'total_room_rate' => 'required|integer',
+            'total_service_fee' => 'required|integer',
+            'total_money' => 'required|integer'
 
         ]);
         if ($validator->fails()) {
@@ -41,9 +41,9 @@ class BillController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'total_room_rate' => 'required',
-            'total_service_fee' => 'required',
-            'total_money' => 'required'
+            'total_room_rate' => 'required|integer',
+            'total_service_fee' => 'required|integer',
+            'total_money' => 'required|integer'
         ]);
 
         if ($validator->fails()) {
@@ -109,6 +109,49 @@ class BillController extends Controller
         ];
         return response()->json($arr, 200);
      }
+
+     public function getListTotalRoomBy(Request $request) {
+        $bill = Bill::whereBetween('total_room_rate', [$request->total_room_from, $request->total_room_to])
+        ->get();
+
+        return response()->json([
+            'HTTP Code' => '200',
+            'message' => 'Hiden client successfully ',
+            'data' => $bill,
+        ], 201);
+    }
+
+    public function getListTotalServiceBy(Request $request) {
+        dd($request->total_service_from);
+        $bill = Bill::whereBetween('total_room_rate', [$request->total_service_from, $request->total_service_to])
+        ->get();
+
+        return response()->json([
+            'HTTP Code' => '200',
+            'message' => 'Hiden client successfully ',
+            'data' => $bill,
+        ], 201);
+    }
+
+    public function getListTotalBy(Request $request) {
+        $bill = Bill::whereBetween('total_room_rate', [$request->total_from, $request->total_to])
+        ->get();
+        if (is_null($bill)) {
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Hóa đơn không tồn tại',
+                'data' => []
+            ];
+            return response()->json($arr, 200);
+        }
+
+        return response()->json([
+            'HTTP Code' => '200',
+            'message' => 'Hiden client successfully ',
+            'data' => $bill,
+        ], 201);
+    }
+
 
 
 }

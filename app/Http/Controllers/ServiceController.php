@@ -27,7 +27,7 @@ class ServiceController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'name' => 'required',
-            'price' => 'required'
+            'price' => 'required|integer'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
@@ -48,8 +48,9 @@ class ServiceController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
+
             'name' => 'required',
-            'price' => 'required'
+            'price' => 'required|integer'
         ]);
 
         if ($validator->fails()) {
