@@ -113,22 +113,39 @@ class BillController extends Controller
      public function getListTotalRoomBy(Request $request) {
         $bill = Bill::whereBetween('total_room_rate', [$request->total_room_from, $request->total_room_to])
         ->get();
-
-        return response()->json([
+        // dd($bill);
+        if (is_null($bill)) {
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Hóa đơn không tồn tại',
+                'data' => []
+            ];
+            return response()->json($arr, 200);
+        }
+        $arr=[
             'HTTP Code' => '200',
-            'message' => 'Hiden client successfully ',
+            'message' => 'Danh sách hóa đơn ',
             'data' => $bill,
-        ], 201);
+        ];
+        return response()->json($arr, 201);
     }
 
     public function getListTotalServiceBy(Request $request) {
         dd($request->total_service_from);
         $bill = Bill::whereBetween('total_room_rate', [$request->total_service_from, $request->total_service_to])
         ->get();
+        if (is_null($bill)) {
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Hóa đơn không tồn tại',
+                'data' => []
+            ];
+            return response()->json($arr, 200);
+        }
 
         return response()->json([
             'HTTP Code' => '200',
-            'message' => 'Hiden client successfully ',
+            'message' => 'Danh sách hóa đơn',
             'data' => $bill,
         ], 201);
     }
@@ -147,7 +164,7 @@ class BillController extends Controller
 
         return response()->json([
             'HTTP Code' => '200',
-            'message' => 'Hiden client successfully ',
+            'message' => 'Danh sách hóa đơn ',
             'data' => $bill,
         ], 201);
     }
