@@ -26,8 +26,8 @@ class ServiceController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'name' => 'required',
-            'price' => 'required|integer'
+            'name' => 'required|string|unique',
+            'price' => 'required|numeric|min:0'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
@@ -35,7 +35,7 @@ class ServiceController extends Controller
         $service = Services::create($input);
         $arr = [
             'HTTP Code' => 200,
-            'message' => "Sản phẩm đã lưu thành công",
+            'message' => "Created service successfully ",
             'data' => $service
         ];
         return response()->json($arr, 201);
@@ -48,9 +48,8 @@ class ServiceController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-
-            'name' => 'required',
-            'price' => 'required|integer'
+            'name' => 'required|string|unique',
+            'price' => 'required|numeric|min:0'
         ]);
 
         if ($validator->fails()) {
@@ -67,7 +66,7 @@ class ServiceController extends Controller
 
         return response()->json([
             'HTTP Code' => 200,
-            'message' => 'Thay đổi thông tin dịch vụ thành công ! ',
+            'message' => 'The service was successfully updated',
             'service' => $id
         ], 201);
     }
@@ -83,6 +82,7 @@ class ServiceController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
+
         $service = Services::where('id', $id)->update(
             ['status' => $request->status]
         );
@@ -103,14 +103,15 @@ class ServiceController extends Controller
         if (is_null($service)) {
             $arr = [
                 'HTTP Code' => '200',
-                'message' => 'Không có dịch vụ này',
+                'message' => 'Unknown service',
                 'data' => []
             ];
             return response()->json($arr, 200);
         }
+
         $arr = [
             'HTTP Code' => '200',
-            'message' => "Chi tiết dịch vụ ",
+            'message' => "Detail service",
             'data' => $service
         ];
         return response()->json($arr, 201);
