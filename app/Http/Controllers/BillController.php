@@ -121,7 +121,6 @@ class BillController extends Controller
 
         $bill = Bill::whereBetween('total_room_rate', [$request->total_room_from, $request->total_room_to])
             ->get();
-        // dd($bill[0]);
         if (!empty($bill[0])) {
             $arr = [
                 'HTTP Code' => '200',
@@ -154,7 +153,7 @@ class BillController extends Controller
 
         $bill = Bill::whereBetween('total_room_rate', [$request->total_service_from, $request->total_service_to])
             ->get();
-        if (is_null($bill)) {
+        if (!empty($bill[0])) {
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Unknown bill information',
@@ -184,7 +183,7 @@ class BillController extends Controller
         }
         $bill = Bill::whereBetween('total_room_rate', [$request->total_from, $request->total_to])
             ->get();
-        if (is_null($bill)) {
+        if (!empty($bill[0])) {
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Unknown bill information',
