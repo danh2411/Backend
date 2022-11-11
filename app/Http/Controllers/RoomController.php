@@ -12,10 +12,13 @@ class RoomController extends Controller
     //  get list
     public function roomAll()
     {
-        $room = Room::all();
+        // $room = Room::all()->paginate(10);
+        $room = Room::paginate(10);
+        
+
         $arr = [
             'HTTP Code' => 200,
-            'message' => "Danh sách phòng",
+            'message' => "List Room",
             'data' => $room
         ];
         return response()->json($arr, 200);
@@ -27,20 +30,19 @@ class RoomController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'name_room' => 'required',
+            'name_room' => 'required|string|unique',
             'typ_room' => 'required',
-            'price' => 'required',
-            'capacity' => 'required'
-
-            
+            'price' => 'required|numeric|min:0',
+            'capacity' => 'required|integer|min:1|max:20',  
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
+
         $room = Room::create($input);
         $arr = [
             'HTTP Code' => 200,
-            'message' => "Thông tin phòng đã lưu thành công",
+            'message' => " Created room successfully",
             'data' => $room
         ];
         return response()->json($arr, 201);
@@ -53,16 +55,15 @@ class RoomController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'name_room' => 'required',
+            'name_room' => 'required|string|unique',
             'typ_room' => 'required',
-            'price' => 'required',
-            'capacity' => 'required'
+            'price' => 'required|numeric|min:0',
+            'capacity' => 'required|integer|min:1|max:20',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-
 
         $room = Room::where('id', $id)->update(
             [
@@ -72,10 +73,9 @@ class RoomController extends Controller
                 'capacity' =>  $request->capacity
             ]
         );
-
         return response()->json([
             'HTTP Code' => 200,
-            'message' => 'Thay đổi thông tin dịch vụ thành công ! ',
+            'message' => 'The room information was successfully updated',
             'service' => $id
         ], 201);
     }
@@ -88,15 +88,17 @@ class RoomController extends Controller
          $validator = Validator::make($request->all(), [
              'status' => 'required|integer',
          ]);
+
          if ($validator->fails()) {
              return response()->json($validator->errors()->toJson(), 400);
          }
+
          $room = Room::where('id', $id)->update(
              ['status' => $request->status]
          );
          return response()->json([
              'HTTP Code' => '200',
-             'message' => 'Hiden service successfully ',
+             'message' => 'Hiden room successfully ',
              'service' => $id,
          ], 201);
      }

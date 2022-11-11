@@ -9,26 +9,77 @@ use Validator;
 
 class BillController extends Controller
 {
-   
-    
     //create 
     public function create(Request $request)
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-
-            'total_room_rate' => 'required',
-            'total_service_fee' => 'required',
-            'total_money' => 'required'
-
+            'total_room_rate' => 'required|numeric|min:0',
+            'total_service_fee' => 'required|numeric|min:0',
+            'total_money' => 'required|numeric|min:0'
         ]);
+
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
+
         $bill = Bill::create($input);
         $arr = [
             'HTTP Code' => 200,
-            'message' => "Hóa đơn đã tạo thành công",
+            'message' => "Created bill successfully",
+            'data' => $bill
+        ];
+        return response()->json($arr,201);
+    }
+
+
+
+    //edit
+    public function edit(Request $request, $id)
+    {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'total_room_rate' => 'required|numeric|min:0',
+            'total_service_fee' => 'required|numeric|min:0',
+            'total_money' => 'required|numeric|min:0'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        $bill = Bill::where('id', $id)->update(
+            [
+                'total_room_rate' => $request->total_room_rate,
+                'total_service_fee' =>  $request->total_service_fee,
+                'total_money' =>  $request->total_money
+            ]
+        );
+        return response()->json([
+            'HTTP Code' => 200,
+            'message' => 'Change infomation for bill successfully update !',
+            'service' => $id
+        ], 201);
+    }
+
+
+
+    //Room Info
+    public function billInfo($id)
+    {
+        $bill = Bill::find($id);
+        if (empty($bill)) {
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Unknown bill information',
+                'data' => []
+            ];
+            return response()->json($arr, 200);
+        }
+
+        $arr = [
+            'HTTP Code' => '200',
+            'message' => "Detail bill information",
             'data' => $bill
         ];
         return response()->json($arr, 201);
@@ -36,79 +87,115 @@ class BillController extends Controller
 
 
 
-      //edit
-    public function edit(Request $request, $id)
+    //hiden 
+    public function hiden(Request $request, $id)
     {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'total_room_rate' => 'required',
-            'total_service_fee' => 'required',
-            'total_money' => 'required'
+        $validator = Validator::make($request->all(), [
+            'status' => 'required|integer',
         ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+        $bill = Bill::where('id', $id)->update(
+            ['status' => $request->status]
+        );
+        return response()->json([
+            'HTTP Code' => '200',
+            'message' => 'Hiden bill successfully ',
+            'service' => $id,
+        ], 201);
+    }
 
+
+
+    //get list by room
+    public function getListTotalRoomBy(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'total_room_from' => 'required|numeric|min:0',
+            'total_room_to' => 'required|numeric|min:0'
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        $bill = Bill::whereBetween('total_room_rate', [$request->total_room_from, $request->total_room_to])
+            ->get();
+        if (!empty($bill[0])) {
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'List bill ',
+                'data' => $bill,
+            ];
+            return response()->json($arr, 201);
+        }
+        $arr = [
+            'HTTP Code' => '200',
+            'message' => 'Unknown bill information',
+            'data' => []
+        ];
+        return response()->json($arr, 200);
+    }
+
+
+
+    //get list by service
+    public function getListTotalServiceBy(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'total_service_from' => 'required|numeric|min:0',
+            'total_service_to'=> 'required|numeric|min:0'
+        ]);
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
 
 
-        $bill = Bill::where('id', $id)->update(
-            [
-                'total_room_rate' => $request->total_room_rate,
-                'total_service_fee' =>  $request->total_service_fee,
-                'total_money' =>  $request->total_money 
-            ]
-        );
-
-        return response()->json([
-            'HTTP Code' => 200,
-            'message' => 'Thay đổi thông tin hóa đơn thành công ! ',
-            'service' => $id
-        ], 201);
-    }
-   
-
-  
-    //Room Info
-     public function billInfo($id)
-     {
-         $bill = Bill::find($id);
-         if (is_null($bill)) {
-             $arr = [
-                 'HTTP Code' => '200',
-                 'message' => 'Không có thông tin hóa đơn này',
-                 'data' => []
-             ];
-             return response()->json($arr, 200);
-         }
-
-         $arr = [
-             'HTTP Code' => '200',
-             'message' => "Chi tiết thông tin hóa đơn",
-             'data' => $bill
-         ];
-         return response()->json($arr, 201);
-     }
-
-
-     //cancel 
-     public function delete($id){
-        $bill = Bill::find($id);
-        if (is_null($bill)) {
+        $bill = Bill::whereBetween('total_room_rate', [$request->total_service_from, $request->total_service_to])
+            ->get();
+        if (!empty($bill[0])) {
             $arr = [
                 'HTTP Code' => '200',
-                'message' => 'Hóa đơn không tồn tại',
+                'message' => 'Unknown bill information',
                 'data' => []
             ];
             return response()->json($arr, 200);
         }
-        Bill::destroy($id);
-        $arr = [
+
+        return response()->json([
             'HTTP Code' => '200',
-           'message' =>'Hóa đơn đã được hủy bỏ',
-           'data' => []
-        ];
-        return response()->json($arr, 200);
-     }
+            'message' => 'List bill ',
+            'data' => $bill,
+        ], 201);
+    }
 
+    
 
+    //get list by total
+    public function getListTotalBy(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'total_from' => 'required|numeric|min:0',
+            'total_to' => 'required|numeric|min:0'
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+        $bill = Bill::whereBetween('total_room_rate', [$request->total_from, $request->total_to])
+            ->get();
+        if (!empty($bill[0])) {
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Unknown bill information',
+                'data' => []
+            ];
+            return response()->json($arr, 200);
+        }
+
+        return response()->json([
+            'HTTP Code' => '200',
+            'message' => 'List bill ',
+            'data' => $bill,
+        ], 201);
+    }
 }
