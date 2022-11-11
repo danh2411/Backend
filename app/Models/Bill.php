@@ -12,7 +12,7 @@ class Bill extends Model
     protected $fillable = [
     'total_room_rate',
     'total_service_fee',
-    'total_money',
+
 ];
     public function client()
     {
