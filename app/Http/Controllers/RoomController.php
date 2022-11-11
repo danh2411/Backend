@@ -13,9 +13,10 @@ class RoomController extends Controller
     public function roomAll()
     {
         // $room = Room::all()->paginate(10);
-        $room = Room::paginate(10);
+        //check 3 ngôi 
         
-
+        $room = Room::paginate(1);
+        
         $arr = [
             'HTTP Code' => 200,
             'message' => "List Room",
@@ -92,10 +93,19 @@ class RoomController extends Controller
          if ($validator->fails()) {
              return response()->json($validator->errors()->toJson(), 400);
          }
-
+         $room = Room::find($id);
+         if(empty($room)){
+            return response()->json([
+                'HTTP Code' => '200',
+                'message' => 'Unknown room',
+                'service' => $id,
+            ], 201);
+         }
+         
          $room = Room::where('id', $id)->update(
              ['status' => $request->status]
          );
+         
          return response()->json([
              'HTTP Code' => '200',
              'message' => 'Hiden room successfully ',
