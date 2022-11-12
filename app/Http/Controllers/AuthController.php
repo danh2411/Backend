@@ -118,7 +118,6 @@ public function changePassWord(Request $request) {
         $user = Account::where('id', $userId)->update(
                     ['password' => bcrypt($request->new_password)]
                 );
-
         return response()->json([
             'message' => 'User successfully changed password',
             'user' => $userId,
