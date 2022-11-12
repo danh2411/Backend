@@ -19,10 +19,10 @@ class Accounts extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->integer('phone');
-            $table->string('address');
-            $table->integer('CCCD');
-
+            $table->integer('phone')->nullable();
+            $table->string('address')->nullable();
+            $table->integer('CCCD')->nullable();
+            $table->unsignedBigInteger('group_id');
             $table->rememberToken();
             $table->timestamps();
         });

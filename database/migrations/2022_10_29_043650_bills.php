@@ -29,10 +29,10 @@ class Bills extends Migration
 
 
             $table->foreign('account_id')
-                ->references('id')->on('clients')
+                ->references('id')->on('accounts')
                 ->onDelete('cascade');
             $table->foreign('client_id')
-                ->references('id')->on('accounts')
+                ->references('id')->on('clients')
                 ->onDelete('cascade');
         });
     }

@@ -32,6 +32,6 @@ class Bill extends Model
     }
     public function account()
     {
-        return $this->hasOne(Account::class);
+        return $this->belongsTo(Account::class);
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class GroupAccounts extends Migration
+class Addfrag extends Migration
 {
     /**
      * Run the migrations.
@@ -12,16 +12,11 @@ class GroupAccounts extends Migration
      * @return void
      */
     public function up()
-    {
-        Schema::create('group-accounts', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('description');
-
-            $table->timestamps();
-
-
-        });
+    {   Schema::table('accounts', function (Blueprint $table) {
+        $table->foreign('group_id')
+            ->references('id')->on('group-accounts')
+            ->onDelete('cascade');
+    });
     }
 
     /**

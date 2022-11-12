@@ -14,7 +14,7 @@ class Updateclients extends Migration
     public function up()
     {
         Schema::table('clients', function (Blueprint $table) {
-            $table->unsignedBigInteger('room_id');
+            $table->unsignedBigInteger('room_id')->nullable();
 
             $table->foreign('room_id')
                 ->references('id')->on('rooms')
