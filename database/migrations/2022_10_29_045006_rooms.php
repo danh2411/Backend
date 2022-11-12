@@ -18,12 +18,14 @@ class Rooms extends Migration
             $table->unsignedBigInteger('bill_id');
             $table->string('name_room');
             $table->string('typ_room');
-            $table->integer('price');
+            $table->double('price');
             $table->integer('capacity');
 
             $table->string('description');
             $table->integer('status');
             $table->date('date');
+            $table->timestamps();
+
 
             $table->foreign('bill_id')
                 ->references('id')->on('bills')

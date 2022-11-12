@@ -19,8 +19,9 @@ class Services extends Migration
 //            $table->unsignedBigInteger('client_id');
 //            $table->unsignedBigInteger('bill_id');
             $table->string('name');
-            $table->boolean('price');
+            $table->double('price');
             $table->string('description');
+            $table->integer('status');
             $table->timestamps();
 
 //            $table->foreign('client_id')

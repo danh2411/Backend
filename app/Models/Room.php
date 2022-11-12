@@ -14,6 +14,10 @@ class Room extends Model
         'typ_room',
         'price',
         'capacity',
+        'description',
+        'status',
+        'date',
+
 
     ];
     public function client()
