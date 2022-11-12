@@ -10,6 +10,7 @@ class Bill extends Model
     use HasFactory;
     protected $table = 'bills';
     protected $fillable = [
+        'account_id',
         'received_date',
         'payday',
         'total_room_rate',

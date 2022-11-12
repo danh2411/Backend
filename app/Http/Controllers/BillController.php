@@ -9,7 +9,7 @@ use Validator;
 
 class BillController extends Controller
 {
-    //create 
+    //create
     public function create(Request $request)
     {
         $input = $request->all();
@@ -87,7 +87,7 @@ class BillController extends Controller
 
 
 
-    //hiden 
+    //hiden
     public function hiden(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -169,7 +169,7 @@ class BillController extends Controller
         ], 201);
     }
 
-    
+
 
     //get list by total
     public function getListTotalBy(Request $request)
