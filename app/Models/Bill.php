@@ -10,10 +10,14 @@ class Bill extends Model
     use HasFactory;
     protected $table = 'bills';
     protected $fillable = [
-    'total_room_rate',
-    'total_service_fee',
+        'received_date',
+        'payday',
+        'total_room_rate',
+        'total_service_fee',
+        'total_money',
+        'status'
 
-];
+    ];
     public function client()
     {
         return $this->hasOne(Client::class);
@@ -30,5 +34,4 @@ class Bill extends Model
     {
         return $this->hasOne(Account::class);
     }
-
 }

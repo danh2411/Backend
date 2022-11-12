@@ -19,9 +19,13 @@ class Bills extends Migration
             $table->unsignedBigInteger('client_id');
             $table->integer('received_date');
             $table->integer('payday');
-            $table->integer('total_room_rate');
-            $table->integer('total_service_fee');
-            $table->integer('total_money');
+            $table->double('total_room_rate');
+            $table->double('total_service_fee');
+            $table->double('total_money');
+            $table->integer('status');
+            $table->timestamps();
+
+
 
 
             $table->foreign('account_id')
