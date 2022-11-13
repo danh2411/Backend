@@ -37,37 +37,42 @@ class ClientController extends Controller
     }
 
     public function edit(Request $request, $id)
-    {     $user=Client::query()->where->get();
-        dd($user);
-        $validator = Validator::make($request->all(), [
-            'firtname' => 'required|string',
-            'lastname' => 'required|string',
-            'email' => 'required|string|email|max:100|unique:clients',
-            'phone' => 'required|integer|min:10',
-            'status' => 'required|integer|min:0|max:1',
-            'CMD' => 'required|integer|min:15',
-        ]);
+    { $client=Client::query()->find($id);
+        if (!empty($client)){
+            $validator = Validator::make($request->all(), [
+                'firtname' => 'required|string',
+                'lastname' => 'required|string',
+                'email' => 'required|string|email|max:100|unique:clients,email,'.$id,
+                'phone' => 'required|integer|min:10',
+                'status' => 'required|integer|min:0|max:1',
+                'CMND' => 'required|string|max:15',
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+            if ($validator->fails()) {
+                return response()->json($validator->errors()->toJson(), 400);
+            }
+            Client::where('id', $id)->update(
+                ['firtname' => $request->firtname,
+                    'lastname' => $request->lastname,
+                    'email' => $request->email,
+                    'phone' => $request->phone,
+                    'CMND/CCCD' => $request->CMND,
+                ]
+            );
+            $arr=[
+                'HTTP Code' => '200',
+                'message' => 'Client successfully changed profile',
+                'client' => $id,
+            ];
+        }else{
+            $arr=[
+                'HTTP Code' => '200',
+                'message' => 'Client:'. $id .' not found',
+
+            ];
         }
 
-
-            Client::where('id', $id)->update(
-            ['firtname' => $request->firtname,
-            'lastname' => $request->lastname,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'CMD' => $request->CMND,
-
-            ]
-        );
-
-        return response()->json([
-            'HTTP Code' => '200',
-            'message' => 'Client successfully changed profile',
-            'client' => $id,
-        ], 201);
+        return response()->json($arr, 201);
     }
 
     public function hiden(Request $request, $id)
