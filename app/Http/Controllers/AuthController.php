@@ -85,7 +85,38 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function userProfile() {
-        return response()->json(auth()->user());
+       if (!empty(auth()->user()->id)){
+           return response()->json(auth()->user());
+       }
+
+    }
+    public function allAccount() {
+      $user=Account::all();
+      if (!empty($user)){
+          $arr[ 'HTTP Code']='200';
+            $arr['message']= 'Full account';
+            $arr[ 'data']= $user;
+      }else{
+          $arr[ 'HTTP Code']='200';
+          $arr['message']= 'Not Account';
+          $arr[ 'data']= $user;
+      }
+        return response()->json(
+          $arr, 201);
+    }
+    public function oneAccount($id) {
+        $user=Account::query()->find($id);
+        if (!empty($user)){
+            $arr[ 'HTTP Code']='200';
+            $arr['message']= 'Info account id:'.$id;
+            $arr[ 'data']= $user;
+        }else{
+            $arr[ 'HTTP Code']='200';
+            $arr['message']= 'Account not found';
+            $arr[ 'data']= $user;
+        }
+        return response()->json(
+            $arr, 201);
     }
     /**
      * Get the token array structure.

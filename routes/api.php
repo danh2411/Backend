@@ -27,6 +27,8 @@ Route::middleware(['cors'])->group(function($router) {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::get('/view-account', [AuthController::class, 'userProfile']);
+    Route::get('/all-account', [AuthController::class, 'allAccount']);
+    Route::post('/account/id={id}', [AuthController::class,'oneAccount']);
     Route::post('/changepass', [AuthController::class, 'changePassWord']);
 });
 Route::middleware(['cors'])->group(function($router) {

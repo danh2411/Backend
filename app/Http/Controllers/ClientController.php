@@ -37,11 +37,12 @@ class ClientController extends Controller
     }
 
     public function edit(Request $request, $id)
-    {
+    {     $user=Client::query()->where->get();
+        dd($user);
         $validator = Validator::make($request->all(), [
             'firtname' => 'required|string',
             'lastname' => 'required|string',
-//            'email' => 'required|string|email|max:100|unique:clients',
+            'email' => 'required|string|email|max:100|unique:clients',
             'phone' => 'required|integer|min:10',
             'status' => 'required|integer|min:0|max:1',
             'CMD' => 'required|integer|min:15',
@@ -52,10 +53,10 @@ class ClientController extends Controller
         }
 
 
-        $user = Client::where('id', $id)->update(
+            Client::where('id', $id)->update(
             ['firtname' => $request->firtname,
             'lastname' => $request->lastname,
-//                'email' => $request->email,
+                'email' => $request->email,
                 'phone' => $request->phone,
                 'CMD' => $request->CMND,
 
