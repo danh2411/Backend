@@ -9,7 +9,9 @@ use Validator;
 
 class ClientController extends Controller
 {
-
+    public function __construct() {
+        $this->middleware('auth:api', ['except' => ['login']]);
+    }
     public function create(Request $request)
     {
 
@@ -17,17 +19,16 @@ class ClientController extends Controller
             'firtname' => 'required|string|between:2,100',
             'lastname' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:clients',
-            'phone' => 'required|integer|min:10',
+            'phone' => 'required|string|min:10',
+            'CMND/CCCD' => 'required|string|min:10',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
 
-        $user = Client::create(array_merge(
-            $validator->validated(),
-            ['password' => bcrypt($request->password)]
-        ));
+        $user = Client::create(
+            $validator->validated());
         return response()->json([
             'HTTP Code' => '200',
             'message' => 'Client successfully registered',

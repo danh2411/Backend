@@ -18,16 +18,7 @@ use App\Http\Controllers\RoomController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-// Route::group([
-//     'middleware' => ['api','cors'],
 
-// ], function ($router) {
-//     Route::post('/login', [AuthController::class, 'login']);
-//     Route::post('/register', [AuthController::class, 'register']);
-//     Route::post('/logout', [AuthController::class, 'logout']);
-//     Route::post('/refresh', [AuthController::class, 'refresh']);
-//     Route::get('/user-profile', [AuthController::class, 'userProfile']);
-// });
 
 
 Route::middleware(['cors'])->group(function($router) {
@@ -35,11 +26,11 @@ Route::middleware(['cors'])->group(function($router) {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::get('/user-profile', [AuthController::class, 'userProfile']);
+    Route::get('/view-account', [AuthController::class, 'userProfile']);
     Route::post('/changepass', [AuthController::class, 'changePassWord']);
 });
 Route::middleware(['cors'])->group(function($router) {
-    Route::post('/client/createAdd', [ClientController::class,'create']);
+    Route::post('/client/createadd', [ClientController::class,'create']);
     Route::post('/client/edit/id={id}', [ClientController::class,'edit']);
     Route::post('/client/hiden/id={id}', [ClientController::class,'hiden']);
     Route::get('/client/client-profile', [ClientController::class, 'clientProfile']);
