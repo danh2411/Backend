@@ -106,7 +106,8 @@ class AuthController extends Controller
     }
     public function oneAccount($id) {
         $user=Account::query()->find($id);
-        if (!empty($user)){
+
+        if (!empty($user->id)){
             $arr[ 'HTTP Code']='200';
             $arr['message']= 'Info account id:'.$id;
             $arr[ 'data']= $user;
@@ -126,6 +127,7 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     protected function createNewToken($token){
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
@@ -153,5 +155,32 @@ public function changePassWord(Request $request) {
             'message' => 'User successfully changed password',
             'user' => $userId,
         ], 201);
+    }
+    public function hiden(Request $request, $id)
+    {
+        $user = Account::query()->where('id', $id)->first();
+
+        if (!empty($user)) {
+            $status = $user->status === 1 ? 0 : 1;
+
+            $user = Account::where('id', $id)->update(
+                ['status' => $status]
+            );
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Account status change successful ',
+                'account' => $id,
+            ];
+        }else{
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Not found ',
+                'account' => $id,
+            ];
+        }
+
+
+
+        return response()->json($arr, 201);
     }
 }

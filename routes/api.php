@@ -30,11 +30,12 @@ Route::middleware(['cors'])->group(function($router) {
     Route::get('/all-account', [AuthController::class, 'allAccount']);
     Route::post('/account/id={id}', [AuthController::class,'oneAccount']);
     Route::post('/changepass', [AuthController::class, 'changePassWord']);
+    Route::post('/hiden/id={id}', [AuthController::class,'hiden']);
 });
 Route::middleware(['cors'])->group(function($router) {
-    Route::post('/client/createadd', [ClientController::class,'create']);
+    Route::post('/client/create', [ClientController::class,'create']);
     Route::post('/client/edit/id={id}', [ClientController::class,'edit']);
-    Route::post('/client/hiden/id={id}', [ClientController::class,'hiden']);
+    Route::post('/client/hiden', [ClientController::class,'hiden']);
     Route::get('/client/client-profile', [ClientController::class, 'clientProfile']);
 });
 

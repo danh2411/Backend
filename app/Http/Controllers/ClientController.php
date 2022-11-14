@@ -9,9 +9,11 @@ use Validator;
 
 class ClientController extends Controller
 {
-    public function __construct() {
+    public function __construct()
+    {
         $this->middleware('auth:api', ['except' => ['login']]);
     }
+
     public function create(Request $request)
     {
 
@@ -37,21 +39,22 @@ class ClientController extends Controller
     }
 
     public function edit(Request $request, $id)
-    { $client=Client::query()->find($id);
-        if (!empty($client)){
+    {
+        $client = Client::query()->find($id);
+        if (!empty($client)) {
             $validator = Validator::make($request->all(), [
                 'firtname' => 'required|string',
                 'lastname' => 'required|string',
-                'email' => 'required|string|email|max:100|unique:clients,email,'.$id,
+                'email' => 'required|string|email|max:100|unique:clients,email,' . $id,
                 'phone' => 'required|integer|min:10',
-                'status' => 'required|integer|min:0|max:1',
+
                 'CMND' => 'required|string|max:15',
             ]);
 
             if ($validator->fails()) {
                 return response()->json($validator->errors()->toJson(), 400);
             }
-            Client::where('id', $id)->update(
+            Client::query()->where('id', $id)->update(
                 ['firtname' => $request->firtname,
                     'lastname' => $request->lastname,
                     'email' => $request->email,
@@ -59,46 +62,71 @@ class ClientController extends Controller
                     'CMND/CCCD' => $request->CMND,
                 ]
             );
-            $arr=[
+            $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Client successfully changed profile',
                 'client' => $id,
             ];
-        }else{
-            $arr=[
+        } else {
+            $arr = [
                 'HTTP Code' => '200',
-                'message' => 'Client:'. $id .' not found',
+                'message' => 'Client:' . $id . ' not found',
 
             ];
         }
-
         return response()->json($arr, 201);
     }
 
     public function hiden(Request $request, $id)
     {
+        $user = Client::query()->where('id', $id)->first();
+
+        if (!empty($user)) {
+            $status = $user->status === 1 ? 0 : 1;
+            $user = Client::where('id', $id)->update(
+                ['status' => $status]
+            );
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Client status change successful ',
+                'client' => $id,
+            ];
+        }else{
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Not found ',
+                'client' => $id,
+            ];
+        }
+
+
+
+        return response()->json($arr, 201);
+    }
+
+    public function clientProfile(Request $request)
+    {
         $validator = Validator::make($request->all(), [
-            'status' => 'required|integer',
+            'id' => 'numeric',
         ]);
+
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-        $user = Client::where('id', $id)->update(
-            ['status' => $request->status]
-        );
-        return response()->json([
-            'HTTP Code' => '200',
-            'message' => 'Hiden client successfully ',
-            'client' => $id,
-        ], 201);
-    }
-    public function clientProfile(Request $request) {
-        $user = Client::where('id',$request->id)->get();
-        return response()->json([
-            'HTTP Code' => '200',
-            'message' => 'Hiden client successfully ',
-            'data' => $user,
-        ], 201);
+       if (!empty($request->id)){
+           $user = Client::where('id', $request->id)->get();
+           if (!empty($user)){
+               $arr['message']='Find successful client: '.$request->id;
+           }else{
+               $arr['message']='No client found: '.$request->id;
+           }
+       }else{
+           $user = Client::all();
+           $arr['message']='All clients';
+       }
+        $arr[ 'HTTP Code']='200';
+        $arr[ 'data']=$user;
+        return response()->json($arr, 201);
     }
 
 }
