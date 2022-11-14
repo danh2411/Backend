@@ -14,15 +14,18 @@ class AuthController extends Controller
      *
      * @return void
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
+
     /**
      * Get a JWT via given credentials.
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string|min:6',
@@ -31,24 +34,26 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-        if (! $token = auth()->attempt($validator->validated())) {
+        if (!$token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         return $this->createNewToken($token);
     }
+
     /**
      * Register a User.
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function register(Request $request) {
+    public function register(Request $request)
+    {
         $validator = Validator::make($request->all(), [
-            'group_id'=>'required',
+            'group_id' => 'required',
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:accounts',
             'password' => 'required|string|confirmed|min:6',
         ]);
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
 
@@ -67,66 +72,84 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function logout() {
+    public function logout()
+    {
         auth()->logout();
         return response()->json(['message' => 'User successfully signed out']);
     }
+
     /**
      * Refresh a token.
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function refresh() {
+    public function refresh()
+    {
         return $this->createNewToken(auth()->refresh());
     }
+
     /**
      * Get the authenticated User.
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function userProfile() {
-       if (!empty(auth()->user()->id)){
-           return response()->json(auth()->user());
-       }
+    public function userProfile()
+    {
+        if (!empty(auth()->user()->id)) {
+            return response()->json(auth()->user());
+        }
 
     }
-    public function allAccount() {
-      $user=Account::all();
-      if (!empty($user)){
-          $arr[ 'HTTP Code']='200';
-            $arr['message']= 'Full account';
-            $arr[ 'data']= $user;
-      }else{
-          $arr[ 'HTTP Code']='200';
-          $arr['message']= 'Not Account';
-          $arr[ 'data']= $user;
-      }
-        return response()->json(
-          $arr, 201);
-    }
-    public function oneAccount($id) {
-        $user=Account::query()->find($id);
 
-        if (!empty($user->id)){
-            $arr[ 'HTTP Code']='200';
-            $arr['message']= 'Info account id:'.$id;
-            $arr[ 'data']= $user;
-        }else{
-            $arr[ 'HTTP Code']='200';
-            $arr['message']= 'Account not found';
-            $arr[ 'data']= $user;
+    public function allAccount(Request $request)
+    {
+
+        $query = Account::query();
+        $perpage = $request->input('perpage',9);
+        $page = $request->input('page',1);
+        $total = $query->count();
+        $user = $query->offset(($page - 1) * $perpage)->limit($perpage)->get();
+
+
+        $arr['message'] = 'All clients';
+
+
+        $arr['HTTP Code'] = '200';
+
+        $arr['total'] = $total;
+        $arr['page'] = $page;
+        $arr['last_page'] = ceil($total / $perpage);
+        $arr['data'] = $user;
+
+        return response()->json($arr, 201);
+    }
+
+    public function oneAccount($id)
+    {
+        $user = Account::query()->find($id);
+
+        if (!empty($user->id)) {
+            $arr['HTTP Code'] = '200';
+            $arr['message'] = 'Info account id:' . $id;
+            $arr['data'] = $user;
+        } else {
+            $arr['HTTP Code'] = '200';
+            $arr['message'] = 'Account not found';
+            $arr['data'] = $user;
         }
         return response()->json(
             $arr, 201);
     }
+
     /**
      * Get the token array structure.
      *
-     * @param  string $token
+     * @param string $token
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function createNewToken($token){
+    protected function createNewToken($token)
+    {
 
         return response()->json([
             'access_token' => $token,
@@ -137,25 +160,27 @@ class AuthController extends Controller
     }
 
 
-public function changePassWord(Request $request) {
+    public function changePassWord(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'old_password' => 'required|string|min:6',
             'new_password' => 'required|string|confirmed|min:6',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
         $userId = auth()->user()->id;
 
         $user = Account::where('id', $userId)->update(
-                    ['password' => bcrypt($request->new_password)]
-                );
+            ['password' => bcrypt($request->new_password)]
+        );
         return response()->json([
             'message' => 'User successfully changed password',
             'user' => $userId,
         ], 201);
     }
+
     public function hiden(Request $request, $id)
     {
         $user = Account::query()->where('id', $id)->first();
@@ -171,14 +196,13 @@ public function changePassWord(Request $request) {
                 'message' => 'Account status change successful ',
                 'account' => $id,
             ];
-        }else{
+        } else {
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Not found ',
                 'account' => $id,
             ];
         }
-
 
 
         return response()->json($arr, 201);

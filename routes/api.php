@@ -44,8 +44,8 @@ Route::middleware(['cors'])->group(function($router) {
     Route::post('/service/add', [ServiceController::class,'create']);
     Route::post('/service/edit/id={id}', [ServiceController::class,'edit']);
     Route::post('/service/hiden/id={id}', [ServiceController::class,'hiden']);
-    Route::get('/service/service-info/id={id}', [ServiceController::class, 'serviceInfo']);
-    // Route::get('/service/all', [ServiceController::class, 'serviceAll']);
+    Route::get('/service/service-info', [ServiceController::class, 'serviceInfo']);
+
 });
 
 //rooms
@@ -54,7 +54,7 @@ Route::middleware(['cors'])->group(function($router) {
     Route::post('/room/edit/id={id}', [RoomController::class,'edit']);
     Route::post('/room/hiden/id={id}', [RoomController::class,'hiden']);
     Route::get('/room/getlist', [RoomController::class, 'roomAll']);
-    // Route::get('/room/room-info/id={id}', [RoomController::class,'roomInfo']);
+
 });
 
 //bills

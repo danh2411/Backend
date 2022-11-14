@@ -121,7 +121,13 @@ class ClientController extends Controller
                $arr['message']='No client found: '.$request->id;
            }
        }else{
-           $user = Client::all();
+
+           $query = Client::query();
+           $perpage = $request->input('perpage',9);
+           $page = $request->input('page',1);
+           $total=$query->count();
+           $user=$query->offset(($page-1)*$perpage)->limit($perpage)->get();
+
            $arr['message']='All clients';
        }
         $arr[ 'HTTP Code']='200';

@@ -8,25 +8,14 @@ use Validator;
 
 class ServiceController extends Controller
 {
-    //get all
-    // public function serviceAll()
-    // {
-    //     $service = Services::all();
-    //     $arr = [
-    //         'HTTP Code' => 200,
-    //         'message' => "Danh sách dịch vụ",
-    //         'data' => $service
-    //     ];
-    //     return response()->json($arr, 200);
-    // }
-    
+
 
     //create
     public function create(Request $request)
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'name' => 'required|string|unique',
+            'name' => 'required|string|unique:services',
             'price' => 'required|numeric|min:0'
         ]);
         if ($validator->fails()) {
@@ -48,8 +37,9 @@ class ServiceController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'name' => 'required|string|unique',
-            'price' => 'required|numeric|min:0'
+            'name' => 'required|string|unique:services,name,'.$id,
+            'price' => 'required|numeric|min:0',
+            'description'=> 'string',
         ]);
 
         if ($validator->fails()) {
@@ -76,44 +66,73 @@ class ServiceController extends Controller
     //hiden
     public function hiden(Request $request, $id)
     {
-        $validator = Validator::make($request->all(), [
-            'status' => 'required|integer',
-        ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+        $user = Services::query()->where('id', $id)->first();
+
+        if (!empty($user)) {
+            $status = $user->status === 1 ? 0 : 1;
+            $user = Services::where('id', $id)->update(
+                ['status' => $status]
+            );
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Client status change successful ',
+                'client' => $id,
+            ];
+        }else{
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Not found ',
+                'client' => $id,
+            ];
         }
 
-        $service = Services::where('id', $id)->update(
-            ['status' => $request->status]
-        );
-        return response()->json([
-            'HTTP Code' => '200',
-            'message' => 'Hiden service successfully ',
-            'service' => $id,
-        ], 201);
+
+
+        return response()->json($arr, 201);
     }
 
 
- 
 
     //serviceInfo
-    public function serviceInfo($id)
+    public function serviceInfo(Request $request)
     {
-        $service = Services::find($id);
-        if (is_null($service)) {
-            $arr = [
-                'HTTP Code' => '200',
-                'message' => 'Unknown service',
-                'data' => []
-            ];
-            return response()->json($arr, 200);
-        }
+        $validator = Validator::make($request->all(), [
+            'id' => 'numeric',
+            'pageSize'=>'numeric',
+            'page'=>'numeric',
+        ]);
 
-        $arr = [
-            'HTTP Code' => '200',
-            'message' => "Detail service",
-            'data' => $service
-        ];
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+        if (!empty($request->id)){
+            $user = Services::where('id', $request->id)->get();
+            if (!empty($user)){
+                $arr['message']='Find successful client: '.$request->id;
+            }else{
+                $arr['message']='No client found: '.$request->id;
+            }
+        }else{
+
+
+            $query = Services::query();
+            $perpage = $request->input('perpage',9);
+            $page = $request->input('page',1);
+            $total=$query->count();
+            $user=$query->offset(($page-1)*$perpage)->limit($perpage)->get();
+
+
+
+            $arr['message']='All Services';
+
+        }
+        $arr[ 'HTTP Code']='200';
+
+        $arr[ 'total']=$total;
+        $arr[ 'page']=$page;
+        $arr[ 'last_page']=ceil($total/$perpage);
+        $arr[ 'data']=$user;
+
         return response()->json($arr, 201);
     }
 }
