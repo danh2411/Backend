@@ -99,11 +99,13 @@ class ServiceController extends Controller
         ]);
         $total = 1;
         $page = 1;
+        $perpage=1;
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
         if (!empty($request->id)) {
             $user = Services::where('id', $request->id)->get();
+
             if (!empty($user)) {
                 $arr['message'] = 'Find successful client: ' . $request->id;
             } else {
