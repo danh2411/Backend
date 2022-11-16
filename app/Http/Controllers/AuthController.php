@@ -16,7 +16,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        $this->middleware('auth:role', ['except' => ['login', 'register']]);
     }
 
     /**
@@ -34,9 +34,12 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-        if (!$token = auth()->attempt($validator->validated())) {
+        $user = Account::query()->where('email', $request->email)->first();
+
+        if ($user->status == 0||!$token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+
         return $this->createNewToken($token);
     }
 
@@ -105,8 +108,8 @@ class AuthController extends Controller
     {
 
         $query = Account::query();
-        $perpage = $request->input('perpage',9);
-        $page = $request->input('page',1);
+        $perpage = $request->input('perpage', 9);
+        $page = $request->input('page', 1);
         $total = $query->count();
         $user = $query->offset(($page - 1) * $perpage)->limit($perpage)->get();
 

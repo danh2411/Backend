@@ -43,6 +43,7 @@ return [
             'provider' => 'accounts',
         ],
         'api' => [
+
             'driver' => 'jwt',
             'provider' => 'accounts',
             'hash' => false,

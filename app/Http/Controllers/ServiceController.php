@@ -31,15 +31,14 @@ class ServiceController extends Controller
     }
 
 
-
     //edit
     public function edit(Request $request, $id)
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'name' => 'required|string|unique:services,name,'.$id,
+            'name' => 'required|string|unique:services,name,' . $id,
             'price' => 'required|numeric|min:0',
-            'description'=> 'string',
+            'description' => 'string',
         ]);
 
         if ($validator->fails()) {
@@ -62,7 +61,6 @@ class ServiceController extends Controller
     }
 
 
-
     //hiden
     public function hiden(Request $request, $id)
     {
@@ -78,7 +76,7 @@ class ServiceController extends Controller
                 'message' => 'Client status change successful ',
                 'client' => $id,
             ];
-        }else{
+        } else {
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Not found ',
@@ -87,10 +85,8 @@ class ServiceController extends Controller
         }
 
 
-
         return response()->json($arr, 201);
     }
-
 
 
     //serviceInfo
@@ -98,40 +94,40 @@ class ServiceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'id' => 'numeric',
-            'pageSize'=>'numeric',
-            'page'=>'numeric',
+            'pageSize' => 'numeric',
+            'page' => 'numeric',
         ]);
-
+        $total = 1;
+        $page = 1;
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-        if (!empty($request->id)){
+        if (!empty($request->id)) {
             $user = Services::where('id', $request->id)->get();
-            if (!empty($user)){
-                $arr['message']='Find successful client: '.$request->id;
-            }else{
-                $arr['message']='No client found: '.$request->id;
+            if (!empty($user)) {
+                $arr['message'] = 'Find successful client: ' . $request->id;
+            } else {
+                $arr['message'] = 'No client found: ' . $request->id;
             }
-        }else{
+        } else {
 
 
             $query = Services::query();
-            $perpage = $request->input('perpage',9);
-            $page = $request->input('page',1);
-            $total=$query->count();
-            $user=$query->offset(($page-1)*$perpage)->limit($perpage)->get();
+            $perpage = $request->input('perpage', 9);
+            $page = $request->input('page', 1);
+            $total = $query->count();
+            $user = $query->offset(($page - 1) * $perpage)->limit($perpage)->get();
 
 
-
-            $arr['message']='All Services';
+            $arr['message'] = 'All Services';
 
         }
-        $arr[ 'HTTP Code']='200';
+        $arr['HTTP Code'] = '200';
 
-        $arr[ 'total']=$total;
-        $arr[ 'page']=$page;
-        $arr[ 'last_page']=ceil($total/$perpage);
-        $arr[ 'data']=$user;
+        $arr['total'] = $total;
+        $arr['page'] = $page;
+        $arr['last_page'] = ceil($total / $perpage);
+        $arr['data'] = $user;
 
         return response()->json($arr, 201);
     }
