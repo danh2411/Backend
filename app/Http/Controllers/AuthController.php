@@ -37,6 +37,7 @@ class AuthController extends Controller
         }
         $user = Account::query()->where('email', $request->email)->first();
 
+
         if ($user->status == 0 || !$token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
@@ -79,6 +80,7 @@ class AuthController extends Controller
     public function logout()
     {
         auth()->logout();
+
         return response()->json(['message' => 'User successfully signed out']);
     }
 
