@@ -6,7 +6,10 @@ use App\Models\Group;
 use Illuminate\Http\Request;
 
 class GoupController extends Controller
+{ public function __construct()
 {
+    $this->middleware('auth:api', ['except' => ['login', 'register']]);
+}
     public function create(Request $request)
     {
 

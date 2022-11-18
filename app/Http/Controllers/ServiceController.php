@@ -8,7 +8,10 @@ use Validator;
 
 class ServiceController extends Controller
 {
-
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+    }
 
     //create
     public function create(Request $request)
@@ -44,20 +47,27 @@ class ServiceController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
+        $service = Services::query()->find($id);
+        if (!empty($service)) {
+            Services::where('id', $id)->update(
+                [
+                    'name' => $request->name,
+                    'price' => $request->price,
+                ]
+            );
+            return response()->json([
+                'HTTP Code' => 200,
+                'message' => 'The service was successfully updated',
+                'service' => $id
+            ], 201);
+        } else {
+            return response()->json([
+                'HTTP Code' => 200,
+                'message' => 'The account update failed.Servies not found',
+                'service' => $id
+            ], 201);
+        }
 
-
-        $service = Services::where('id', $id)->update(
-            [
-                'name' => $request->name,
-                'price' => $request->price,
-            ]
-        );
-
-        return response()->json([
-            'HTTP Code' => 200,
-            'message' => 'The service was successfully updated',
-            'service' => $id
-        ], 201);
     }
 
 
@@ -99,7 +109,7 @@ class ServiceController extends Controller
         ]);
         $total = 1;
         $page = 1;
-        $perpage=1;
+        $perpage = 1;
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Account;
@@ -16,7 +17,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:role', ['except' => ['login', 'register']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
     /**
@@ -36,7 +37,7 @@ class AuthController extends Controller
         }
         $user = Account::query()->where('email', $request->email)->first();
 
-        if ($user->status == 0||!$token = auth()->attempt($validator->validated())) {
+        if ($user->status == 0 || !$token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
@@ -162,6 +163,110 @@ class AuthController extends Controller
         ]);
     }
 
+    public function editAccount(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+
+            'name' => 'required|string',
+            'phone' => 'required|string|min:10|max:11',
+            'address' => 'required|string',
+            'CCCD' => 'required|string|max:13',
+            'role' => 'required|numeric',
+
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+        $user = Account::query()->find($id);
+
+
+        if (!empty($user)) {
+            $id = $user->id;
+            if (!empty($request->role)) {
+                $role = Group::query()->find($request->role);
+
+                if (!empty($role)) {
+                    Account::query()->where('id', $id)->update(['group_id' => $request->role,
+                        'name' => $request->name,
+                        'phone' => $request->phone,
+                        'address' => $request->address,
+                        'CCCD' => $request->CCCD,
+                    ]);
+                    $data['HTTP Code'] = 200;
+                    $data['Account'] = $id;
+                    $data['message'] = 'The account was successfully updated';
+                } else {
+                    $data['HTTP Code'] = 200;
+                    $data['Account'] = null;
+                    $data['message'] = 'The account update failed.Role not found';
+                }
+
+            } else {
+                Account::query()->where('id', $id)->update(['group_id' => $request->role,
+                    'name' => $request->name,
+                    'phone' => $request->phone,
+                    'address' => $request->address,
+                    'CCCD' => $request->CCCD,
+                ]);
+                $data['HTTP Code'] = 200;
+                $data['Account'] = $id;
+                $data['message'] = 'The account was successfully updated';
+            }
+        } else {
+            $data['HTTP Code'] = 200;
+            $data['Account'] = null;
+            $data['message'] = 'Account not found';
+        }
+        return response()->json($data, 201);
+    }
+
+    public function updateProflie(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+
+            'name' => 'required|string',
+            'phone' => 'required|string|min:10|max:11',
+            'address' => 'required|string',
+            'CCCD' => 'required|string|max:13',
+            'role' => 'required|numeric',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+        $id = Auth::user()->id;
+
+        if (!empty($request->role)) {
+            $role = Group::query()->find($request->role);
+
+            if (!empty($role)) {
+                Account::query()->where('id', $id)->update(['group_id' => $request->role,
+                    'name' => $request->name,
+                    'phone' => $request->phone,
+                    'address' => $request->address,
+                    'CCCD' => $request->CCCD,
+                ]);
+                $data['HTTP Code'] = 200;
+                $data['Account'] = $id;
+                $data['message'] = 'The account was successfully updated';
+            } else {
+                $data['HTTP Code'] = 200;
+                $data['Account'] = null;
+                $data['message'] = 'The account update failed.Role not found';
+            }
+
+        } else {
+            Account::query()->where('id', $id)->update(['group_id' => $request->role,
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'CCCD' => $request->CCCD,
+            ]);
+            $data['HTTP Code'] = 200;
+            $data['Account'] = $id;
+            $data['message'] = 'The account was successfully updated';
+        }
+        return response()->json($data, 201);
+    }
 
     public function changePassWord(Request $request)
     {
@@ -206,8 +311,6 @@ class AuthController extends Controller
                 'account' => $id,
             ];
         }
-
-
         return response()->json($arr, 201);
     }
 }

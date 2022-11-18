@@ -2,29 +2,62 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Services;
 use Illuminate\Http\Request;
 use App\Models\Room;
 use Validator;
 
 class RoomController extends Controller
+{ public function __construct()
 {
+    $this->middleware('auth:api', ['except' => ['login', 'register']]);
+}
 
     //  get list
-    public function roomAll()
+    public function roomAll(Request $request)
     {
-        // $room = Room::all()->paginate(10);
-        //check 3 ngôi 
-        
-        $room = Room::paginate(1);
-        
-        $arr = [
-            'HTTP Code' => 200,
-            'message' => "List Room",
-            'data' => $room
-        ];
-        return response()->json($arr, 200);
-    }
+        $validator = Validator::make($request->all(), [
+            'id' => 'numeric',
+            'pageSize' => 'numeric',
+            'page' => 'numeric',
+        ]);
+        $total = 1;
+        $page = 1;
+        $perpage = 1;
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+        if (!empty($request->id)) {
+            $user = Room::where('id', $request->id)->get();
 
+            if (!empty($user)) {
+                $arr['message'] = 'Find successful room: ' . $request->id;
+            } else {
+                $arr['message'] = 'No client found: ' . $request->id;
+            }
+        } else {
+
+
+            $query = Room::query();
+            $perpage = $request->input('perpage', 9);
+            $page = $request->input('page', 1);
+            $total = $query->count();
+            $user = $query->offset(($page - 1) * $perpage)->limit($perpage)->get();
+
+
+            $arr['message'] = 'All Rooms';
+
+        }
+        $arr['HTTP Code'] = '200';
+
+        $arr['total'] = $total;
+        $arr['page'] = $page;
+        $arr['last_page'] = ceil($total / $perpage);
+        $arr['data'] = $user;
+
+        return response()->json($arr, 201);
+
+    }
 
     //create
     public function create(Request $request)
@@ -34,7 +67,7 @@ class RoomController extends Controller
             'name_room' => 'required|string|unique',
             'typ_room' => 'required',
             'price' => 'required|numeric|min:0',
-            'capacity' => 'required|integer|min:1|max:20',  
+            'capacity' => 'required|integer|min:1|max:20',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
@@ -48,7 +81,6 @@ class RoomController extends Controller
         ];
         return response()->json($arr, 201);
     }
-   
 
 
     //edit
@@ -65,74 +97,58 @@ class RoomController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-
-        $room = Room::where('id', $id)->update(
-            [
-                'name_room' => $request->name_room,
-                'typ_room' =>  $request->typ_room,
-                'price' =>  $request->price,
-                'capacity' =>  $request->capacity
-            ]
-        );
-        return response()->json([
-            'HTTP Code' => 200,
-            'message' => 'The room information was successfully updated',
-            'service' => $id
-        ], 201);
-    }
-   
-
-
-     //hiden
-     public function hiden(Request $request, $id)
-     {
-         $validator = Validator::make($request->all(), [
-             'status' => 'required|integer',
-         ]);
-
-         if ($validator->fails()) {
-             return response()->json($validator->errors()->toJson(), 400);
-         }
-         $room = Room::find($id);
-         if(empty($room)){
+        $room = Room::query()->find($id);
+        if (!empty($room)) {
+            $room = Room::where('id', $id)->update(
+                [
+                    'name_room' => $request->name_room,
+                    'typ_room' => $request->typ_room,
+                    'price' => $request->price,
+                    'capacity' => $request->capacity
+                ]
+            );
             return response()->json([
-                'HTTP Code' => '200',
-                'message' => 'Unknown room',
-                'service' => $id,
+                'HTTP Code' => 200,
+                'message' => 'The room information was successfully updated',
+                'service' => $id
             ], 201);
-         }
-         
-         $room = Room::where('id', $id)->update(
-             ['status' => $request->status]
-         );
-         
-         return response()->json([
-             'HTTP Code' => '200',
-             'message' => 'Hiden room successfully ',
-             'service' => $id,
-         ], 201);
-     }
+        } else {
+            return response()->json([
+                'HTTP Code' => 200,
+                'message' => 'Room not found',
+                'service' => null
+            ], 201);
+        }
 
-     
+    }
 
-     //Room Info
-    //  public function roomInfo($id)
-    //  {
-    //      $room = Room::find($id);
-    //      if (is_null($room)) {
-    //          $arr = [
-    //              'HTTP Code' => '200',
-    //              'message' => 'Không có thông tin phòng này',
-    //              'data' => []
-    //          ];
-    //          return response()->json($arr, 200);
-    //      }
 
-    //      $arr = [
-    //          'HTTP Code' => '200',
-    //          'message' => "Chi tiết thông tin phòng",
-    //          'data' => $room
-    //      ];
-    //      return response()->json($arr, 201);
-    //  }
+    //hiden
+    public function hiden(Request $request, $id)
+    {
+        $user = Room::query()->where('id', $id)->first();
+
+        if (!empty($user)) {
+            $status = $user->status === 1 ? 0 : 1;
+             Room::where('id', $id)->update(
+                ['status' => $status]
+            );
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Client status change successful ',
+                'client' => $id,
+            ];
+        } else {
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Not found ',
+                'client' => $id,
+            ];
+        }
+
+
+        return response()->json($arr, 201);
+    }
+
+
 }

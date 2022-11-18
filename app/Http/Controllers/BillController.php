@@ -12,7 +12,10 @@ use Validator;
 
 
 class BillController extends Controller
+{ public function __construct()
 {
+    $this->middleware('auth:api', ['except' => ['login', 'register']]);
+}
     //create
     public function create(Request $request)
     { $user=Auth::user();
