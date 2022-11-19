@@ -130,20 +130,8 @@ class AuthController extends Controller
         return response()->json($arr, 201);
     }
 
-    public function oneAccount(Request $request)
+    public function oneAccount($id)
     {
-
-        $validator = Validator::make($request->all(), [
-
-            'name' => 'required|string',
-            'phone' => 'required|string|min:10|max:11',
-            'address' => 'required|string',
-            'CCCD' => 'required|string|max:13',
-            'role' => 'required|numeric',
-
-        ]);
-        $id=$request->id;
-
         $user = Account::query()->find($id);
 
         if (!empty($user->id)) {
