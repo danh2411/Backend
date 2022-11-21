@@ -97,7 +97,7 @@ return [
         'accounts' => [
             'provider' => 'accounts',
             'table' => 'password_resets',
-            'expire' => 60,
+            'expire' => 60,//time die token
             'throttle' => 60,
         ],
     ],

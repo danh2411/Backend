@@ -8,18 +8,18 @@ use App\Models\Room;
 use Validator;
 
 class RoomController extends Controller
-{ public function __construct()
 {
-    $this->middleware('auth:api', ['except' => ['login', 'register']]);
-}
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+    }
 
     //  get list
     public function roomAll(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'id' => 'numeric',
-            'pageSize' => 'numeric',
-            'page' => 'numeric',
+
         ]);
         $total = 1;
         $page = 1;
@@ -30,10 +30,10 @@ class RoomController extends Controller
         if (!empty($request->id)) {
             $user = Room::where('id', $request->id)->get();
 
-            if (!empty($user)) {
+            if (!empty($user->id)) {
                 $arr['message'] = 'Find successful room: ' . $request->id;
             } else {
-                $arr['message'] = 'No client found: ' . $request->id;
+                $arr['message'] = 'No Room:' . $request->id . ' found';
             }
         } else {
 
@@ -130,19 +130,19 @@ class RoomController extends Controller
 
         if (!empty($user)) {
             $status = $user->status === 1 ? 0 : 1;
-             Room::where('id', $id)->update(
+            Room::where('id', $id)->update(
                 ['status' => $status]
             );
             $arr = [
                 'HTTP Code' => '200',
-                'message' => 'Client status change successful ',
+                'message' => 'Room status change successful ',
                 'client' => $id,
             ];
         } else {
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Not found ',
-                'client' => $id,
+                'Room' => $id,
             ];
         }
 
@@ -150,5 +150,32 @@ class RoomController extends Controller
         return response()->json($arr, 201);
     }
 
+    public function filterStatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'required|numeric|between:0,3',
+
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+        $user = Room::query()->where('status', $request->status)->get();
+
+        if (empty($user)) {
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Not found ',
+                'data' => [],
+            ];
+        } else {
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Not found ',
+                'data' => $user,
+            ];
+        }
+
+        return $arr;
+    }
 
 }
