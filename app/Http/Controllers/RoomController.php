@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bill;
 use App\Models\Services;
 use Illuminate\Http\Request;
 use App\Models\Room;
@@ -153,29 +154,31 @@ class RoomController extends Controller
     public function filterStatus(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'status' => 'required|numeric|between:0,3',
+            'status_bill' => 'numeric|between:0,3',
+            'status_room' => 'numeric|between:0,3',
+            'from' => 'string',
+            'to' => 'string',
 
         ]);
+
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-        $user = Room::query()->where('status', $request->status)->get();
+     if (isset($request->from)){
+         $bill=Bill::query()->whereBetween('day_in', [$request->from,$request->to])->where('status',$request->status_bill)->get();
+foreach ($bill as $b)
+{
+$da=$b->room_id;
 
-        if (empty($user)) {
-            $arr = [
-                'HTTP Code' => '200',
-                'message' => 'Not found ',
-                'data' => [],
-            ];
-        } else {
-            $arr = [
-                'HTTP Code' => '200',
-                'message' => 'Not found ',
-                'data' => $user,
-            ];
-        }
+} $rooms = Room::query()->where('id',$da)->get();
+dd($rooms);
+     }else{
+        $rooms = Room::query()->where('status', $request->status)->get();
+    }
 
-        return $arr;
+
+
+
     }
 
 }

@@ -53,6 +53,7 @@ class ServiceController extends Controller
                 [
                     'name' => $request->name,
                     'price' => $request->price,
+                    'description'=>$request->description,
                 ]
             );
             return response()->json([

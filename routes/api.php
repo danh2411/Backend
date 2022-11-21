@@ -56,7 +56,7 @@ Route::middleware(['cors'])->group(function($router) {
     Route::post('/room/edit/id={id}', [RoomController::class,'edit']);
     Route::post('/room/hiden/id={id}', [RoomController::class,'hiden']);
     Route::get('/room/getlist', [RoomController::class, 'roomAll']);
-    Route::post('/room/filter', [RoomController::class, 'filterStatus']);
+    Route::get('/room/filter', [RoomController::class, 'filterStatus']);
 
 
 });
