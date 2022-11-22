@@ -9,6 +9,14 @@ class Booked extends Model
 {
     use HasFactory;
     protected $table = 'booked-services';
+    protected $fillable = [
+
+        'client_id',
+        'services_id',
+        'amount',
+        'bill_id',
+
+    ];
     public function service()
     {
         return $this->hasMany(Services::class);

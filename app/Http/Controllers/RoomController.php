@@ -89,6 +89,7 @@ class RoomController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
+            'id' => 'required|numeric',
             'name_room' => 'required|string|unique',
             'typ_room' => 'required',
             'price' => 'required|numeric|min:0',
@@ -98,6 +99,7 @@ class RoomController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
+        $id=$request->id;
         $room = Room::query()->find($id);
         if (!empty($room)) {
             $room = Room::where('id', $id)->update(
@@ -160,25 +162,28 @@ class RoomController extends Controller
             'to' => 'string',
 
         ]);
-
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-     if (isset($request->from)){
-         $bill=Bill::query()->whereBetween('day_in', [$request->from,$request->to])->where('status',$request->status_bill)->get();
-foreach ($bill as $b)
-{
-$da=$b->room_id;
+        if (isset($request->from)) {
+            $bill = Bill::query()->whereBetween('day_in', [$request->from, $request->to])->where('status', $request->status_bill)->get();
 
-} $rooms = Room::query()->where('id',$da)->get();
-dd($rooms);
-     }else{
-        $rooms = Room::query()->where('status', $request->status)->get();
-    }
+            foreach ($bill as $b) {
+                $rooms[] = Room::query()->where([['id', $b->room_id], ['status', $request->status_room]])->get();
 
+            }
 
+            return $rooms;
+        } else {
+            $rooms = Room::query()->where('status', $request->status)->get();
+        }
 
-
+        $arr = [
+            'HTTP Code' => '200',
+            'message' => 'Successful',
+            'client' => $rooms,
+        ];
+        return response()->json($arr, 201);
     }
 
 }
