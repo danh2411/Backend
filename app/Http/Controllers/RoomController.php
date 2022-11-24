@@ -175,7 +175,7 @@ class RoomController extends Controller
 
             return $rooms;
         } else {
-            $rooms = Room::query()->where('status', $request->status)->get();
+            $rooms = Room::query()->where('status', $request->status_room)->get();
         }
 
         $arr = [

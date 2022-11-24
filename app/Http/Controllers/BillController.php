@@ -133,7 +133,7 @@ class BillController extends Controller
         $total = $price_service + $price;
         $client = Client::find($request->client_id);
         $bill = Bill::query()->find($id);
-        $data[] = 0;
+
         $data['ser'] = array_combine($services, $sl);
 
         if (!empty($bill->id) && !empty($room->id) && !empty($client->id)) {
@@ -153,18 +153,17 @@ class BillController extends Controller
             if (!empty($request->service_id)) {
                 $bos = Booked::query()->where('bill_id', $id)->get();
 
-                foreach ($bos as $bo) {
-                    foreach ($data['ser'] as $key => $book) {
-                        Booked::query()->where('id', 1)->update(
-                            [
-                                'services_id' => $key,
-                                'amount' => $book,
-                                ]
-                        );
-
-                    }
-
+                foreach ($bos as $bo){
+                  foreach ($data['ser'] as $key=>$da){dd($key[0]);
+                      Booked::query()->where('id', $bo->id)->update(
+                          [
+                              'services_id' => $key,
+                              'amount' => $da,
+                             ]
+                      );
+                  }
                 }
+
             }
             $arr = [
                 'HTTP Code' => 200,
