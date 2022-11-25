@@ -8,10 +8,10 @@ use Validator;
 
 class ServiceController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
-    }
+//    public function __construct()
+//    {
+//        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+//    }
 
     //create
     public function create(Request $request)
@@ -64,7 +64,7 @@ class ServiceController extends Controller
         } else {
             return response()->json([
                 'HTTP Code' => 200,
-                'message' => 'The account update failed.Servies not found',
+                'message' => 'The service update failed.Servies not found',
                 'service' => $id
             ], 201);
         }
@@ -107,6 +107,7 @@ class ServiceController extends Controller
             'id' => 'numeric',
             'pageSize' => 'numeric',
             'page' => 'numeric',
+            'status' => 'numeric',
         ]);
         $total = 1;
         $page = 1;
@@ -118,25 +119,27 @@ class ServiceController extends Controller
             $user = Services::where('id', $request->id)->get();
 
             if (!empty($user)) {
-                $arr['message'] = 'Find successful client: ' . $request->id;
+                $tb['message'] = 'Find successful Services: ' . $request->id;
             } else {
-                $arr['message'] = 'No client found: ' . $request->id;
+                $tb['message'] = 'No Service found: ' . $request->id;
             }
         } else {
+                if (isset($request->status)){
+                    $query = Services::query()->where('status',$request->status);
+                   $check= $query->first();
+                    !empty($check->id)?  $tb['message'] = 'All Services':$tb['message'] = 'Services not found';
+                }else{
+                    $query = Services::query();
+                }
 
-
-            $query = Services::query();
             $perpage = $request->input('perpage', 9);
             $page = $request->input('page', 1);
             $total = $query->count();
             $user = $query->offset(($page - 1) * $perpage)->limit($perpage)->get();
 
-
-            $arr['message'] = 'All Services';
-
         }
         $arr['HTTP Code'] = '200';
-
+        $arr['message']= $tb['message'];
         $arr['total'] = $total;
         $arr['page'] = $page;
         $arr['last_page'] = ceil($total / $perpage);

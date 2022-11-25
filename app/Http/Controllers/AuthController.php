@@ -119,7 +119,6 @@ class AuthController extends Controller
 
         $arr['message'] = 'All clients';
 
-
         $arr['HTTP Code'] = '200';
 
         $arr['total'] = $total;

@@ -121,8 +121,9 @@ class BillController extends Controller
         $services = $request->input('service_id');
 
         foreach ($services as $key => $service) {
-            $books[] = Services::query()->where('id', $service)->first();
+            $books[] = Services::query()->where('id', $service)->get();
         }
+        dd($books);
         foreach ($books as $book) {
             $dat[] = $book->price;
         }
@@ -134,10 +135,8 @@ class BillController extends Controller
         $client = Client::find($request->client_id);
         $bill = Bill::query()->find($id);
 
-        $data['ser'] = array_combine($services, $sl);
-
         if (!empty($bill->id) && !empty($room->id) && !empty($client->id)) {
-            $bill = Bill::query()->where('id', $id)->update(
+           Bill::query()->where('id', $id)->update(
                 ['account_id' => $user->id,
                     'room_id' => $room->id,
                     'client_id' => $client->id,
@@ -152,7 +151,17 @@ class BillController extends Controller
             );
             if (!empty($request->service_id)) {
                 $bos = Booked::query()->where('bill_id', $id)->delete();
-
+                $data['ser'] = array_combine($services, $sl);
+                $data['client_id'] = $request->client_id;
+                $data['bill_id'] = $bill->id;
+                foreach ($data['ser'] as $key => $book) {
+                    Booked::query()->create(array_merge(
+                        ['client_id' => $data['client_id'],
+                            'services_id' => $key,
+                            'amount' => $book,
+                            'bill_id' => $data['bill_id']],
+                    ));
+                }
 
             }
             $arr = [

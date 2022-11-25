@@ -99,8 +99,6 @@ class ClientController extends Controller
             ];
         }
 
-
-
         return response()->json($arr, 201);
     }
 
