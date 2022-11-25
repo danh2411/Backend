@@ -9,10 +9,10 @@ use Validator;
 
 class ClientController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['login']]);
-    }
+//    public function __construct()
+//    {
+//        $this->middleware('auth:api', ['except' => ['login']]);
+//    }
 
     public function create(Request $request)
     {
@@ -113,7 +113,7 @@ class ClientController extends Controller
         }
        if (!empty($request->id)){
            $user = Client::where('id', $request->id)->get();
-           if (!empty($user)){
+           if (!empty($user->id)){
                $arr['message']='Find successful client: '.$request->id;
            }else{
                $arr['message']='No client found: '.$request->id;
