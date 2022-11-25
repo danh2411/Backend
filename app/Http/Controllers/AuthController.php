@@ -172,7 +172,7 @@ class AuthController extends Controller
             'name' => 'required|string',
             'phone' => 'required|string|min:10|max:11',
             'address' => 'required|string',
-            'CCCD' => 'required|string|max:13',
+            'CCCD' => 'required|string|min:12|max:13',
             'role' => 'required|numeric',
 
         ]);
@@ -229,7 +229,7 @@ class AuthController extends Controller
             'name' => 'required|string',
             'phone' => 'required|string|min:10|max:11',
             'address' => 'required|string',
-            'CCCD' => 'required|string|max:13',
+            'CCCD' => 'required|string|min:12|max:13',
             'role' => 'required|numeric',
         ]);
         if ($validator->fails()) {

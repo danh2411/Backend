@@ -151,18 +151,8 @@ class BillController extends Controller
 
             );
             if (!empty($request->service_id)) {
-                $bos = Booked::query()->where('bill_id', $id)->get();
+                $bos = Booked::query()->where('bill_id', $id)->delete();
 
-                foreach ($bos as $bo){
-                  foreach ($data['ser'] as $key=>$da){dd($key[0]);
-                      Booked::query()->where('id', $bo->id)->update(
-                          [
-                              'services_id' => $key,
-                              'amount' => $da,
-                             ]
-                      );
-                  }
-                }
 
             }
             $arr = [
