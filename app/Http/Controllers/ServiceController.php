@@ -130,6 +130,9 @@ class ServiceController extends Controller
                     !empty($check->id)?  $tb['message'] = 'All Services':$tb['message'] = 'Services not found';
                 }else{
                     $query = Services::query();
+                    $check= $query->first();
+                    !empty($check->id)?  $tb['message'] = 'All Services':$tb['message'] = 'Services not found';
+
                 }
 
             $perpage = $request->input('perpage', 9);
