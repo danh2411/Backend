@@ -8,10 +8,10 @@ use Validator;
 
 class ServiceController extends Controller
 {
-//    public function __construct()
-//    {
-//        $this->middleware('auth:api', ['except' => ['login', 'register']]);
-//    }
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+    }
 
     //create
     public function create(Request $request)
@@ -118,7 +118,7 @@ class ServiceController extends Controller
         if (!empty($request->id)) {
             $user = Services::where('id', $request->id)->get();
 
-            if (!empty($user)) {
+            if (!empty($user->id)) {
                 $tb['message'] = 'Find successful Services: ' . $request->id;
             } else {
                 $tb['message'] = 'No Service found: ' . $request->id;
