@@ -112,9 +112,9 @@ class BillController extends Controller
             'amount' => 'min:0',
 
         ]);
-//        if ($validator->fails()) {
-//            return response()->json($validator->errors()->toJson(), 400);
-//        }
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
         $amounts = $request->amount;
         $services = [];
         $books = null;
@@ -123,7 +123,7 @@ class BillController extends Controller
         foreach ($services as $key => $service) {
             $books[] = Services::query()->where('id', $service)->get();
         }
-        dd($books);
+
         foreach ($books as $book) {
             $dat[] = $book->price;
         }

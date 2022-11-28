@@ -26,15 +26,15 @@ Route::middleware(['cors'])->group(function($router) {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::get('/view-account', [AuthController::class, 'userProfile']);
-    Route::get('/all-account', [AuthController::class, 'allAccount']);
-    Route::get('/account/id={id}', [AuthController::class,'oneAccount']);
-    Route::post('/update-account/id={id}', [AuthController::class, 'editAccount']);
+    Route::get('/view-account', [AuthController::class, 'userProfile'])->middleware('role:admin');
+    Route::get('/all-account', [AuthController::class, 'allAccount'])->middleware('role:admin');
+    Route::get('/account/id={id}', [AuthController::class,'oneAccount'])->middleware('role:admin');
+    Route::post('/update-account/id={id}', [AuthController::class, 'editAccount'])->middleware('role:admin');
     Route::post('/update-profile', [AuthController::class, 'updateProflie']);
     Route::post('/changepass', [AuthController::class, 'changePassWord']);
-    Route::post('/hiden/id={id}', [AuthController::class,'hiden']);
+    Route::post('/hiden/id={id}', [AuthController::class,'hiden'])->middleware('role:admin');
 });
-Route::middleware(['cors'])->group(function($router) {
+Route::middleware(['cors','role:personnel'])->group(function($router) {
     Route::post('/client/create', [ClientController::class,'create']);
     Route::post('/client/edit/id={id}', [ClientController::class,'edit']);
     Route::post('/client/hiden/id={id}', [ClientController::class,'hiden']);
@@ -43,20 +43,20 @@ Route::middleware(['cors'])->group(function($router) {
 
 //services
 Route::middleware(['cors'])->group(function($router) {
-    Route::post('/service/add', [ServiceController::class,'create']);
-    Route::post('/service/edit/id={id}', [ServiceController::class,'edit']);
-    Route::post('/service/hiden/id={id}', [ServiceController::class,'hiden']);
-    Route::get('/service/service-info', [ServiceController::class, 'serviceInfo']);
+    Route::post('/service/add', [ServiceController::class,'create'])->middleware('role:admin');
+    Route::post('/service/edit/id={id}', [ServiceController::class,'edit'])->middleware('role:admin');
+    Route::post('/service/hiden/id={id}', [ServiceController::class,'hiden'])->middleware('role:admin');
+    Route::get('/service/service-info', [ServiceController::class, 'serviceInfo'])->middleware('role:personnel');
 
 });
 
 //rooms
 Route::middleware(['cors'])->group(function($router) {
-    Route::post('/room/add', [RoomController::class,'create']);
-    Route::post('/room/edit', [RoomController::class,'edit']);
-    Route::get('/room/hiden/id={id}', [RoomController::class,'hiden']);
-    Route::get('/room/getlist', [RoomController::class, 'roomAll']);
-    Route::get('/room/filter', [RoomController::class, 'filterStatus']);
+    Route::post('/room/add', [RoomController::class,'create'])->middleware('role:admin');
+    Route::post('/room/edit', [RoomController::class,'edit'])->middleware('role:admin');
+    Route::get('/room/hiden/id={id}', [RoomController::class,'hiden'])->middleware('role:admin');
+    Route::get('/room/getlist', [RoomController::class, 'roomAll'])->middleware('role:personnel');
+    Route::get('/room/filter', [RoomController::class, 'filterStatus'])->middleware('role:personnel');
 
 
 });
