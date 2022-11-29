@@ -22,7 +22,9 @@ use App\Http\Controllers\RoomController;
 
 
 Route::middleware(['cors'])->group(function($router) {
+    Route::get('/2fa/reset', [AuthController::class, 'resendEmail'])->name('2fa.resend');
     Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/code', [AuthController::class, 'codeEmail'])->name('codeEmail');
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);

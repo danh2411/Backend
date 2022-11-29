@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\UserCode;
+use http\Cookie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Account;
@@ -15,6 +17,8 @@ class AuthController extends Controller
      *
      * @return void
      */
+    public $test = null;
+
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
@@ -36,13 +40,56 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
         $user = Account::query()->where('email', $request->email)->first();
-
+//        $credentials = $request->only('email', 'password');
 
         if ($user->status == 0 || !$token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-
+//        if (Auth::attempt($credentials))
+//            auth()->user()->generateCode();
         return $this->createNewToken($token);
+    }
+
+    public function codeEmail(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'code' => 'required|min:4',
+
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+        $code = UserCode::where('user_id', auth()->user()->id)
+            ->where('updated_at', '>=', now()->subMinutes(2))
+            ->first();
+        if ($request->code == $code) {
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Code True',
+                'data' => 1,
+            ];
+            return response()->json($arr, 201);
+        } else {
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Code False',
+                'data' => 0,
+            ];
+        }
+        return response()->json($arr, 201);
+
+    }
+
+    public function resendEmail()
+    {
+        auth()->user()->generateCode();
+        $arr = [
+            'HTTP Code' => '200',
+            'message' => 'We sent you code on your email.',
+            'data' => 0,
+        ];
+        return response()->json($arr, 201);
     }
 
     /**
@@ -292,6 +339,8 @@ class AuthController extends Controller
 
     public function hiden(Request $request, $id)
     {
+
+
         $user = Account::query()->where('id', $id)->first();
 
         if (!empty($user)) {

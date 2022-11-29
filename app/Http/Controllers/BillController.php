@@ -22,6 +22,9 @@ class BillController extends Controller
     }
 
     //create
+
+
+    ///
     public function create(Request $request)
     {
         $user = Auth::user();
@@ -42,15 +45,15 @@ class BillController extends Controller
         }
 
         $books = null;
-        $services = $request->input('service_id');
-        $sl = $request->input('amount');
-        foreach ($services as $key => $service) {
-            $books[] = Services::query()->where('id', $service)->first();
-        }
+        $services = $request->service_id;
+        $sl = $request->amount;
+
+            $books[] = Services::query()->where('id', $services)->first();
+
         foreach ($books as $book) {
             $dat[] = $book->price;
         }
-        $price_service = array_sum($dat) * array_sum($sl);
+        $price_service = array_sum($dat) * $sl;
         $room = Room::query()->find($request->room_id)->first();
         $price = ($request->day_out - $request->day_in) / 86400 * $room->price;
         $total = $price_service + $price;
@@ -67,19 +70,17 @@ class BillController extends Controller
             ));
             $data[] = 0;
             if (!empty($request->service_id)) {
-                $price_service = array_sum($dat) * array_sum($sl);
-                $data['ser'] = array_combine($services, $sl);
+
                 $data['client_id'] = $request->client_id;
                 $data['bill_id'] = $bill->id;
-                foreach ($data['ser'] as $key => $book) {
                     Booked::query()->create(array_merge(
                         ['client_id' => $data['client_id'],
-                            'services_id' => $key,
-                            'amount' => $book,
+                            'services_id' => $services,
+                            'amount' => $sl,
                             'bill_id' => $data['bill_id']],
                     ));
                 }
-            }
+
             $arr = [
                 'HTTP Code' => 200,
                 'message' => "Created bill successfully",
@@ -94,7 +95,7 @@ class BillController extends Controller
         return response()->json($arr, 201);
     }
 
-
+///
     //edit
     public function edit(Request $request, $id)
     {
