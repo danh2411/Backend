@@ -40,13 +40,13 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
         $user = Account::query()->where('email', $request->email)->first();
-//        $credentials = $request->only('email', 'password');
+        $credentials = $request->only('email', 'password');
 
         if ($user->status == 0 || !$token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-//        if (Auth::attempt($credentials))
-//            auth()->user()->generateCode();
+        if (Auth::attempt($credentials))
+            auth()->user()->generateCode();
         return $this->createNewToken($token);
     }
 
