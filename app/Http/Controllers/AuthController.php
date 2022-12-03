@@ -63,7 +63,7 @@ class AuthController extends Controller
         $code = UserCode::where('user_id', auth()->user()->id)
             ->where('updated_at', '>=', now()->subMinutes(2))
             ->first();
-        if ($request->code == $code) {
+        if ($request->code == $code->code) {
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Code True',

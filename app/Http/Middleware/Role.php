@@ -30,9 +30,15 @@ class Role
         foreach ($permissions as $permission) {
             if ($user->name == $permission) {
                 return $next($request);
+            }else{
+                $arr = [
+                    'HTTP Code' => '401',
+                    'message' => 'USER DOES NOT HAVE THE RIGHT PERMISSIONS.',
+                    'data' => 0,
+                ];
             }
         }
-        $arr='USER DOES NOT HAVE THE RIGHT PERMISSIONS.';
+
          return response()->json($arr, 201);
 
     }
