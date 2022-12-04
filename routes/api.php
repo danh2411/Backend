@@ -30,7 +30,7 @@ Route::middleware(['cors'])->group(function($router) {
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::get('/view-account', [AuthController::class, 'userProfile'])->middleware('role:admin');
     Route::get('/all-account', [AuthController::class, 'allAccount'])->middleware('role:admin');
-    Route::get('/account/id={id}', [AuthController::class,'oneAccount'])->middleware('role:admin');
+    Route::get('/account/id={id}', [AuthController::class,'oneAccount']);
     Route::post('/update-account/id={id}', [AuthController::class, 'editAccount'])->middleware('role:admin');
     Route::post('/update-profile', [AuthController::class, 'updateProflie']);
     Route::post('/changepass', [AuthController::class, 'changePassWord']);
