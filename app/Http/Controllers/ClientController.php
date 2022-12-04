@@ -16,26 +16,28 @@ class ClientController extends Controller
 
     public function create(Request $request)
     {
+          dd(time());
 
-        $validator = Validator::make($request->all(), [
-            'firtname' => 'required|string|between:2,100',
-            'lastname' => 'required|string|between:2,100',
-            'email' => 'required|string|email|max:100|unique:clients',
-            'phone' => 'required|string|min:10',
-            'CCCD' => 'required|string|max:13',
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-
-        $user = Client::create(
-            $validator->validated());
-        return response()->json([
-            'HTTP Code' => '200',
-            'message' => 'Client successfully registered',
-            'client' => $user
-        ], 201);
+//        $validator = Validator::make($request->all(), [
+//            'firtname' => 'required|string|between:2,100',
+//            'lastname' => 'required|string|between:2,100',
+//            'email' => 'required|string|email|max:100|unique:clients',
+//            'phone' => 'required|string|min:10',
+//            'CCCD' => 'required|string|max:13',
+//        ]);
+//
+//        if ($validator->fails()) {
+//            return response()->json($validator->errors()->toJson(), 400);
+//        }
+//
+//        $user = Client::create(
+//            $validator->validated());
+//        return response()->json([
+//            'HTTP Code' => '200',
+//            'message' => 'Client successfully registered',
+//            'client' => $user
+//        ], 201);
     }
 
     public function edit(Request $request, $id)

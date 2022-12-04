@@ -45,8 +45,8 @@ class AuthController extends Controller
         if ($user->status == 0 || !$token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        if (Auth::attempt($credentials))
-            auth()->user()->generateCode();
+//        if (Auth::attempt($credentials))
+//            auth()->user()->generateCode();
         return $this->createNewToken($token);
     }
 
@@ -60,10 +60,21 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-        $code = UserCode::where('user_id', auth()->user()->id)
-            ->where('updated_at', '>=', now()->subMinutes(2))
-            ->first();
-        if ($request->code == $code->code) {
+
+        $get = UserCode::where('user_id', auth()->user()->id);
+           $code=$get ->first();
+        $re=!empty($code->code)?$code->code:1;
+        if ($request->code ==$re) {
+           $ab= $get->where('updated_at', '>=', now()->subMinutes(2))
+               ->first();
+           if (empty($ab)){
+               $arr = [
+                   'HTTP Code' => '200',
+                   'message' => 'Code Over',
+                   'data' => 1,
+               ];
+               return response()->json($arr, 201);
+           }
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Code True',
@@ -276,7 +287,7 @@ class AuthController extends Controller
             'phone' => 'required|string|min:10|max:11',
             'address' => 'required|string',
             'CCCD' => 'required|string|max:13',
-            'role' => 'required|numeric',
+
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);

@@ -80,7 +80,7 @@ class BillController extends Controller
                             'bill_id' => $data['bill_id']],
                     ));
                 }
-
+                Room::query()->where('id',$room->id)->update(['status',4]);
             $arr = [
                 'HTTP Code' => 200,
                 'message' => "Created bill successfully",
@@ -165,6 +165,7 @@ class BillController extends Controller
                 }
 
             }
+            Room::query()->where('id',$room->id)->update(['status',4]);
             $arr = [
                 'HTTP Code' => 200,
                 'message' => "Update bill successfully",
@@ -229,29 +230,29 @@ class BillController extends Controller
     }
 
 //status clear
-    public function Pay(Request $request, $id)
-    {
-        $bill = Bill::query()->where('id', $id)->first();
-
-        if (!empty($bill)) {
-            $status = $bill->status === 1 ? 2 : 3;
-            $user = Bill::where('id', $id)->update(
-                ['status' => $status]
-            );
-            $arr = [
-                'HTTP Code' => '200',
-                'message' => 'Bill status change successful ',
-                'client' => $id,
-            ];
-        } else {
-            $arr = [
-                'HTTP Code' => '200',
-                'message' => 'Not found ',
-                'client' => $id,
-            ];
-        }
-        return response()->json($arr, 201);
-    }
+//    public function Pay(Request $request, $id)
+//    {
+//        $bill = Bill::query()->where('id', $id)->first();
+//
+//        if (!empty($bill)) {
+//            $status = $bill->status === 1 ? 2 : 3;
+//            $user = Bill::where('id', $id)->update(
+//                ['status' => $status]
+//            );
+//            $arr = [
+//                'HTTP Code' => '200',
+//                'message' => 'Bill status change successful ',
+//                'client' => $id,
+//            ];
+//        } else {
+//            $arr = [
+//                'HTTP Code' => '200',
+//                'message' => 'Not found ',
+//                'client' => $id,
+//            ];
+//        }
+//        return response()->json($arr, 201);
+//    }
 
     //get list by room
     public function getListTotalRoomBy(Request $request)
@@ -281,64 +282,39 @@ class BillController extends Controller
         ];
         return response()->json($arr, 200);
     }
-
-
-    //get list by service
-    public function getListTotalServiceBy(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'total_service_from' => 'required|numeric|min:0',
-            'total_service_to' => 'required|numeric|min:0'
-        ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-
-
-        $bill = Bill::whereBetween('total_room_rate', [$request->total_service_from, $request->total_service_to])
-            ->get();
-        if (!empty($bill[0])) {
+public  function  checkin(Request  $request){
+    $validator = Validator::make($request->all(), [
+        'room_id' => 'required|numeric|min:0',
+    ]);
+    if ($validator->fails()) {
+        return response()->json($validator->errors()->toJson(), 400);
+    }
+    $room = Room::query()->find($request->room_id)->first();
+    if ($room->id){
+        if ($room->status==4){
+            Room::query()->where('id',$room->id)->update(['status',2]);
             $arr = [
                 'HTTP Code' => '200',
-                'message' => 'Unknown bill information',
-                'data' => []
+                'message' => 'Change successful',
+                'data' => [],
             ];
-            return response()->json($arr, 200);
         }
-
-        return response()->json([
-            'HTTP Code' => '200',
-            'message' => 'List bill ',
-            'data' => $bill,
-        ], 201);
-    }
-
-
-    //get list by total
-    public function getListTotalBy(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'total_from' => 'required|numeric|min:0',
-            'total_to' => 'required|numeric|min:0'
-        ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-        $bill = Bill::whereBetween('total_room_rate', [$request->total_from, $request->total_to])
-            ->get();
-        if (!empty($bill[0])) {
+        else{
             $arr = [
                 'HTTP Code' => '200',
-                'message' => 'Unknown bill information',
-                'data' => []
+                'message' => 'Room is not set before',
+                'data' => [],
             ];
-            return response()->json($arr, 200);
         }
-
-        return response()->json([
+    }else{
+        $arr = [
             'HTTP Code' => '200',
-            'message' => 'List bill ',
-            'data' => $bill,
-        ], 201);
+            'message' => 'Room not found',
+            'data' => [],
+        ];
     }
+    return response()->json($arr, 200);
+}
+
+
 }
