@@ -33,8 +33,8 @@ class BillController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'client_id' => 'required|numeric|min:0',
-            'day_in' => 'required|numeric|min:0',
-            'day_out' => 'required|numeric|min:0',
+            'day_in' => 'required|string',
+            'day_out' => 'required|string',
             'room_id' => 'required|numeric|min:0',
             'service_id' => 'min:0',
             'amount' => 'min:0',
@@ -86,7 +86,7 @@ class BillController extends Controller
                             'bill_id' => $data['bill_id']],
                     ));
                 }
-                Room::query()->where('id',$room->id)->update(['status',4]);
+                Room::query()->where('id',$room->id)->update(['status'=>4]);
             $arr = [
                 'HTTP Code' => 200,
                 'message' => "Created bill successfully",
@@ -112,8 +112,8 @@ class BillController extends Controller
         $validator = Validator::make($input, [
 
             'client_id' => 'required|numeric|min:0',
-            'day_in' => 'required|numeric|min:0',
-            'day_out' => 'required|numeric|min:0',
+            'day_in' => 'required|string',
+            'day_out' => 'required|string',
             'room_id' => 'required|numeric|min:0',
             'service_id' => 'min:0',
             'amount' => 'min:0',
@@ -173,7 +173,7 @@ class BillController extends Controller
                 }
 
             }
-            Room::query()->where('id',$room->id)->update(['status',4]);
+            Room::query()->where('id',$room->id)->update(['status'=>4]);
             $arr = [
                 'HTTP Code' => 200,
                 'message' => "Update bill successfully",
