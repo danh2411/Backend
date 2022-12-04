@@ -39,15 +39,17 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-        $user = Account::query()->where('email', $request->email)->first();
+        $us = Account::query()->where('email', $request->email)->first();
+        $user=!empty($us)?$us->status:0;
         $credentials = $request->only('email', 'password');
-
-        if ($user->status == 0 || !$token = auth()->attempt($validator->validated())) {
+        if ($user == 0 || !$token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-//        if (Auth::attempt($credentials))
-//            auth()->user()->generateCode();
-        return $this->createNewToken($token);
+      $a=  $this->createNewToken($token);
+        if (Auth::attempt($credentials))
+            auth()->user()->generateCode();
+        return $a;
+
     }
 
     public function codeEmail(Request $request)
