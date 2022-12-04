@@ -13,9 +13,13 @@ class Kernel extends ConsoleKernel
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */
+    protected $commands = [
+        Commands\RessetCommand::class,
+
+    ];
     protected function schedule(Schedule $schedule)
-    {
-        // $schedule->command('inspire')->hourly();
+    {       // $schedule->command('reset:room')->everyFiveMinutes()
+         $schedule->command('reset:room')->dailyAt('14:01');
     }
 
     /**
@@ -25,6 +29,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
+
         $this->load(__DIR__.'/Commands');
 
         require base_path('routes/console.php');

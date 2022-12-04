@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Bill;
 use App\Models\Services;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Room;
 use Validator;
@@ -100,7 +101,7 @@ class RoomController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-        $id=$request->id;
+        $id = $request->id;
         $room = Room::query()->find($id);
         if (!empty($room)) {
             $room = Room::where('id', $id)->update(
@@ -158,16 +159,19 @@ class RoomController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'status_bill' => 'numeric|between:0,3',
-            'status_room' => 'numeric|between:0,3',
+            'status_room' => 'numeric|between:0,4',
             'from' => 'string',
             'to' => 'string',
 
         ]);
+
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
         if (isset($request->from)) {
-            $bill = Bill::query()->whereBetween('day_in', [$request->from, $request->to])->where('status', $request->status_bill)->get();
+            $from = Carbon::parse($request->from)->timestamp;
+            $to=Carbon::parse($request->to)->timestamp;
+            $bill = Bill::query()->whereBetween('day_in', [$from, $to])->where('status', $request->status_bill)->get();
 
             foreach ($bill as $b) {
                 $rooms[] = Room::query()->where([['id', $b->room_id], ['status', $request->status_room]])->get();
@@ -186,5 +190,6 @@ class RoomController extends Controller
         ];
         return response()->json($arr, 201);
     }
+
 
 }

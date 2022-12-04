@@ -296,11 +296,9 @@ class AuthController extends Controller
             return response()->json($validator->errors()->toJson(), 400);
         }
         $id = Auth::user()->id;
+        
 
-
-
-
-            Account::query()->where('id', $id)->update(['group_id' => $request->role,
+            Account::query()->where('id', $id)->update([
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'address' => $request->address,

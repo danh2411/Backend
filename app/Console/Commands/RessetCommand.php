@@ -2,6 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Bill;
+use App\Models\Room;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class RessetCommand extends Command
@@ -11,7 +14,7 @@ class RessetCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'reset:room';
 
     /**
      * The console command description.
@@ -37,6 +40,21 @@ class RessetCommand extends Command
      */
     public function handle()
     {
+        $da= date( "Y-m-d" , now()->timestamp );
+        $date  = Carbon::parse($da)->timestamp;
 
+        $a=   Bill::query()->where('day_in',$date)->get();
+
+        foreach ($a as $b){
+            $room=   Room::query()->find($b->room_id);
+            if($room->status==4){
+                Room::query()->where('id',$b->room_id)->update(
+                    ['status' => 1]
+                );
+              Bill::query()->where('id',$b->id)->update(['status'=>3]);
+            }
+
+        }
+        $this->info('Demo:Cron Cummand Run successfully!');
     }
 }

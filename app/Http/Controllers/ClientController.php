@@ -12,37 +12,32 @@ use Validator;
 
 class ClientController extends Controller
 {
-//    public function __construct()
-//    {
-//        $this->middleware('auth:api', ['except' => ['login']]);
-//    }
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['login']]);
+    }
 
     public function create(Request $request)
-    {$a=Carbon::now()->toArray();
+    {
+        $validator = Validator::make($request->all(), [
+            'firtname' => 'required|string|between:2,100',
+            'lastname' => 'required|string|between:2,100',
+            'email' => 'required|string|email|max:100|unique:clients',
+            'phone' => 'required|string|min:10',
+            'CCCD' => 'required|string|max:13',
+        ]);
 
-dd(Carbon::createFromFormat('Y-m-d H:m:s',now())->timestamp);
-     $a=   Bill::query()->where('day_in',time())->get();
-        dd($a);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
 
-//        $validator = Validator::make($request->all(), [
-//            'firtname' => 'required|string|between:2,100',
-//            'lastname' => 'required|string|between:2,100',
-//            'email' => 'required|string|email|max:100|unique:clients',
-//            'phone' => 'required|string|min:10',
-//            'CCCD' => 'required|string|max:13',
-//        ]);
-//
-//        if ($validator->fails()) {
-//            return response()->json($validator->errors()->toJson(), 400);
-//        }
-//
-//        $user = Client::create(
-//            $validator->validated());
-//        return response()->json([
-//            'HTTP Code' => '200',
-//            'message' => 'Client successfully registered',
-//            'client' => $user
-//        ], 201);
+        $user = Client::create(
+            $validator->validated());
+        return response()->json([
+            'HTTP Code' => '200',
+            'message' => 'Client successfully registered',
+            'client' => $user
+        ], 201);
     }
 
     public function edit(Request $request, $id)
@@ -98,7 +93,7 @@ dd(Carbon::createFromFormat('Y-m-d H:m:s',now())->timestamp);
                 'message' => 'Client status change successful ',
                 'client' => $id,
             ];
-        }else{
+        } else {
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Not found ',
@@ -118,25 +113,25 @@ dd(Carbon::createFromFormat('Y-m-d H:m:s',now())->timestamp);
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-       if (!empty($request->id)){
-           $user = Client::where('id', $request->id)->get();
-           if (!empty($user->id)){
-               $arr['message']='Find successful client: '.$request->id;
-           }else{
-               $arr['message']='No client found: '.$request->id;
-           }
-       }else{
+        if (!empty($request->id)) {
+            $user = Client::where('id', $request->id)->get();
+            if (!empty($user->id)) {
+                $arr['message'] = 'Find successful client: ' . $request->id;
+            } else {
+                $arr['message'] = 'No client found: ' . $request->id;
+            }
+        } else {
 
-           $query = Client::query();
-           $perpage = $request->input('perpage',9);
-           $page = $request->input('page',1);
-           $total=$query->count();
-           $user=$query->offset(($page-1)*$perpage)->limit($perpage)->get();
+            $query = Client::query();
+            $perpage = $request->input('perpage', 9);
+            $page = $request->input('page', 1);
+            $total = $query->count();
+            $user = $query->offset(($page - 1) * $perpage)->limit($perpage)->get();
 
-           $arr['message']='All clients';
-       }
-        $arr[ 'HTTP Code']='200';
-        $arr[ 'data']=$user;
+            $arr['message'] = 'All clients';
+        }
+        $arr['HTTP Code'] = '200';
+        $arr['data'] = $user;
         return response()->json($arr, 201);
     }
 

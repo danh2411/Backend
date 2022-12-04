@@ -7,6 +7,7 @@ use App\Models\Booked;
 use App\Models\Client;
 use App\Models\Room;
 use App\Models\Services;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Bill;
 use Illuminate\Support\Facades\Auth;
@@ -55,7 +56,10 @@ class BillController extends Controller
         }
         $price_service = array_sum($dat) * $sl;
         $room = Room::query()->find($request->room_id)->first();
-        $price = ($request->day_out - $request->day_in) / 86400 * $room->price;
+        //timestamp
+        $day_in = Carbon::parse( $request->day_in)->timestamp;
+        $day_out=Carbon::parse($request->day_out)->timestamp;
+        $price = ($day_out - $day_in) / 86400 * $room->price;
         $total = $price_service + $price;
         $client = Client::find($request->client_id);
 
@@ -63,6 +67,8 @@ class BillController extends Controller
 
             $bill = Bill::create(array_merge(
                 $validator->validated(),
+                ['day_in' => $day_in],
+                    ['day_out' =>$day_out],
                 ['total_money' => $total],
                 ['total_service_fee' => (int)$price_service],
                 ['total_room_rate' => (int)$price],
@@ -130,8 +136,10 @@ class BillController extends Controller
         }
         $sl = $request->input('amount');
         $price_service = array_sum($dat) * array_sum($sl);
+        $day_out = Carbon::parse($request->day_out)->timestamp;
+        $day_in=Carbon::parse($request->day_in)->timestamp;
         $room = Room::query()->find($request->room_id)->first();
-        $price = ($request->day_out - $request->day_in) / 86400 * $room->price;
+        $price = (  $day_out - $day_in) / 86400 * $room->price;
         $total = $price_service + $price;
         $client = Client::find($request->client_id);
         $bill = Bill::query()->find($id);
@@ -141,8 +149,8 @@ class BillController extends Controller
                 ['account_id' => $user->id,
                     'room_id' => $room->id,
                     'client_id' => $client->id,
-                    'day_in' => $request->day_in,
-                    'day_out' => $request->day_out,
+                    'day_in' => $day_in,
+                    'day_out' =>$day_out,
                     'total_money' => $total,
                     'total_service_fee' => (int)$price_service,
                     'total_room_rate' => (int)$price,
