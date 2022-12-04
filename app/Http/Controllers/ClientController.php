@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Account;
+use App\Models\Bill;
 use App\Models\Client;
+use App\Models\Room;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -15,9 +18,11 @@ class ClientController extends Controller
 //    }
 
     public function create(Request $request)
-    {
-          dd(time());
+    {$a=Carbon::now()->toArray();
 
+dd(Carbon::createFromFormat('Y-m-d H:m:s',now())->timestamp);
+     $a=   Bill::query()->where('day_in',time())->get();
+        dd($a);
 
 //        $validator = Validator::make($request->all(), [
 //            'firtname' => 'required|string|between:2,100',

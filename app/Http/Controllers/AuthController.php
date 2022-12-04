@@ -48,6 +48,7 @@ class AuthController extends Controller
       $a=  $this->createNewToken($token);
         if (Auth::attempt($credentials))
             auth()->user()->generateCode();
+
         return $a;
 
     }
@@ -296,26 +297,9 @@ class AuthController extends Controller
         }
         $id = Auth::user()->id;
 
-        if (!empty($request->role)) {
-            $role = Group::query()->find($request->role);
 
-            if (!empty($role)) {
-                Account::query()->where('id', $id)->update(['group_id' => $request->role,
-                    'name' => $request->name,
-                    'phone' => $request->phone,
-                    'address' => $request->address,
-                    'CCCD' => $request->CCCD,
-                ]);
-                $data['HTTP Code'] = 200;
-                $data['Account'] = $id;
-                $data['message'] = 'The account was successfully updated';
-            } else {
-                $data['HTTP Code'] = 200;
-                $data['Account'] = null;
-                $data['message'] = 'The account update failed.Role not found';
-            }
 
-        } else {
+
             Account::query()->where('id', $id)->update(['group_id' => $request->role,
                 'name' => $request->name,
                 'phone' => $request->phone,
@@ -325,7 +309,7 @@ class AuthController extends Controller
             $data['HTTP Code'] = 200;
             $data['Account'] = $id;
             $data['message'] = 'The account was successfully updated';
-        }
+
         return response()->json($data, 201);
     }
 
