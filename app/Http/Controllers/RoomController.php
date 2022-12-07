@@ -170,24 +170,47 @@ class RoomController extends Controller
         }
         if (isset($request->from)) {
             $from = Carbon::parse($request->from)->timestamp;
-            $to=Carbon::parse($request->to)->timestamp;
-            $bill = Bill::query()->whereBetween('day_in', [$from, $to])->where('status', $request->status_bill)->get();
+            $to = Carbon::parse($request->to)->timestamp;
+            if ($request->status_room == 4 || $request->status_room == 2) {
+                $query = Bill::query()->whereBetween('day_in', [$from, $to + 86399])->where('status', $request->status_bill);
+               $a= $query->first();
+                if (!empty($a)) {
+                    $bill= Bill::query()->whereBetween('day_in', [$from, $to + 86399])->where('status', $request->status_bill)->get();
 
-            foreach ($bill as $b) {
-                $rooms[] = Room::query()->where([['id', $b->room_id], ['status', $request->status_room]])->get();
+                    foreach ($bill as $b) {
+                        $rooms[] = Room::query()->where([['id', $b->room_id], ['status', $request->status_room]])->get();
 
+                    }
+                } else {
+                    $rooms =null;
+                }
+                $arr = [
+                    'HTTP Code' => '200',
+                    'message' => 'Successful',
+                    'Rom' => $rooms,
+                ];
+            } else {
+
+                $rooms[] = Room::query()->where('status',1 )->orWhere('status',2 )->get();
+
+                $arr = [
+                    'HTTP Code' => '200',
+                    'message' => 'Successful',
+                    'Rom' => $rooms,
+                ];
             }
 
-            return $rooms;
+
         } else {
             $rooms = Room::query()->where('status', $request->status_room)->get();
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Successful',
+                'Rom' => $rooms,
+            ];
         }
 
-        $arr = [
-            'HTTP Code' => '200',
-            'message' => 'Successful',
-            'client' => $rooms,
-        ];
+
         return response()->json($arr, 201);
     }
 

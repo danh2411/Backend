@@ -17,7 +17,7 @@ class Client extends Model
         'email',
         'phone',
         'status',
-        'CMND/CCCD',
+        'CCCD',
     ];
     public function bill()
     {

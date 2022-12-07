@@ -49,7 +49,7 @@ class BillController extends Controller
         $services = $request->service_id;
         $sl = $request->amount;
 
-            $books[] = Services::query()->where('id', $services)->first();
+        $books[] = Services::query()->where('id', $services)->first();
 
         foreach ($books as $book) {
             $dat[] = $book->price;
@@ -60,6 +60,7 @@ class BillController extends Controller
         $day_in = Carbon::parse( $request->day_in)->timestamp;
         $day_out=Carbon::parse($request->day_out)->timestamp;
         $price = ($day_out - $day_in) / 86400 * $room->price;
+
         $total = $price_service + $price;
         $client = Client::find($request->client_id);
 
@@ -68,7 +69,7 @@ class BillController extends Controller
             $bill = Bill::create(array_merge(
                 $validator->validated(),
                 ['day_in' => $day_in],
-                    ['day_out' =>$day_out],
+                ['day_out' =>$day_out],
                 ['total_money' => $total],
                 ['total_service_fee' => (int)$price_service],
                 ['total_room_rate' => (int)$price],
@@ -79,14 +80,14 @@ class BillController extends Controller
 
                 $data['client_id'] = $request->client_id;
                 $data['bill_id'] = $bill->id;
-                    Booked::query()->create(array_merge(
-                        ['client_id' => $data['client_id'],
-                            'services_id' => $services,
-                            'amount' => $sl,
-                            'bill_id' => $data['bill_id']],
-                    ));
-                }
-                Room::query()->where('id',$room->id)->update(['status'=>4]);
+                Booked::query()->create(array_merge(
+                    ['client_id' => $data['client_id'],
+                        'services_id' => $services,
+                        'amount' => $sl,
+                        'bill_id' => $data['bill_id']],
+                ));
+            }
+            Room::query()->where('id',$request->room_id)->update(['status'=>4]);
             $arr = [
                 'HTTP Code' => 200,
                 'message' => "Created bill successfully",
@@ -145,7 +146,7 @@ class BillController extends Controller
         $bill = Bill::query()->find($id);
 
         if (!empty($bill->id) && !empty($room->id) && !empty($client->id)) {
-           Bill::query()->where('id', $id)->update(
+            Bill::query()->where('id', $id)->update(
                 ['account_id' => $user->id,
                     'room_id' => $room->id,
                     'client_id' => $client->id,
@@ -238,29 +239,29 @@ class BillController extends Controller
     }
 
 //status clear
-//    public function Pay(Request $request, $id)
-//    {
-//        $bill = Bill::query()->where('id', $id)->first();
-//
-//        if (!empty($bill)) {
-//            $status = $bill->status === 1 ? 2 : 3;
-//            $user = Bill::where('id', $id)->update(
-//                ['status' => $status]
-//            );
-//            $arr = [
-//                'HTTP Code' => '200',
-//                'message' => 'Bill status change successful ',
-//                'client' => $id,
-//            ];
-//        } else {
-//            $arr = [
-//                'HTTP Code' => '200',
-//                'message' => 'Not found ',
-//                'client' => $id,
-//            ];
-//        }
-//        return response()->json($arr, 201);
-//    }
+    public function Pay(Request $request, $id)
+    {
+        $bill = Bill::query()->where('id', $id)->first();
+
+        if (!empty($bill)) {
+            $status = $bill->status === 1 ? 2 : 3;
+            $user = Bill::where('id', $id)->update(
+                ['status' => $status]
+            );
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Bill status change successful ',
+                'client' => $id,
+            ];
+        } else {
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Not found ',
+                'client' => $id,
+            ];
+        }
+        return response()->json($arr, 201);
+    }
 
     //get list by room
     public function getListTotalRoomBy(Request $request)
@@ -290,39 +291,41 @@ class BillController extends Controller
         ];
         return response()->json($arr, 200);
     }
-public  function  checkin(Request  $request){
-    $validator = Validator::make($request->all(), [
-        'room_id' => 'required|numeric|min:0',
-    ]);
-    if ($validator->fails()) {
-        return response()->json($validator->errors()->toJson(), 400);
-    }
-    $room = Room::query()->find($request->room_id)->first();
-    if ($room->id){
-        if ($room->status==4){
-            Room::query()->where('id',$room->id)->update(['status',2]);
-            $arr = [
-                'HTTP Code' => '200',
-                'message' => 'Change successful',
-                'data' => [],
-            ];
+    public  function  checkin(Request  $request){
+        $validator = Validator::make($request->all(), [
+            'room_id' => 'required|numeric|min:0',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
         }
-        else{
-            $arr = [
-                'HTTP Code' => '200',
-                'message' => 'Room is not set before',
-                'data' => [],
-            ];
-        }
-    }else{
-        $arr = [
-            'HTTP Code' => '200',
-            'message' => 'Room not found',
-            'data' => [],
-        ];
-    }
-    return response()->json($arr, 200);
-}
+        $room = Room::query()->find($request->room_id);
+        // dd($room);
+        if ($room->id){
+            if ($room->status==4){
+                $name = Room::query()->where('id',$room->id)->update(['status'=>2]);
 
+
+                $arr = [
+                    'HTTP Code' => '200',
+                    'message' => 'Change successful',
+                    'data' => [],
+                ];
+            }
+            else{
+                $arr = [
+                    'HTTP Code' => '200',
+                    'message' => 'Room is not set before',
+                    'data' => [],
+                ];
+            }
+        }else{
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Room not found',
+                'data' => [],
+            ];
+        }
+        return response()->json($arr, 200);
+    }
 
 }
