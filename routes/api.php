@@ -75,6 +75,8 @@ Route::middleware(['cors'])->group(function($router) {
     Route::post('/bill/getlistservice', [BillController::class, 'getListTotalServiceBy']);
     Route::post('/bill/getlist', [BillController::class, 'getListTotalBy']);
 
+    Route::post('/bill/billroom', [BillController::class, 'billroom']);
+
 
 
 });

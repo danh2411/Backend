@@ -328,5 +328,34 @@ class BillController extends Controller
         }
         return response()->json($arr, 200);
     }
+    public  function  billroom(Request  $request){
+        $input = $request->all();
+        $validator = Validator::make($input, [
+
+
+            'room_id' => 'required|numeric|min:0',
+
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+        $bill = Bill::query()->where('room_id', $request->room_id)->where('status',1)->first();
+        if(!empty($bill)){
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Bill info',
+                'data' => $bill,
+            ];
+        }else{
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Bill not found',
+                'data' => [],
+            ];
+        }
+        return response()->json($arr, 200);
+
+
+    }
 
 }
