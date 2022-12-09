@@ -67,7 +67,7 @@ class RoomController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'name_room' => 'required|string|unique',
+            'name_room' => 'required|string|unique:rooms',
             'typ_room' => 'required',
             'price' => 'required|numeric|min:0',
             'capacity' => 'required|integer|min:1|max:20',

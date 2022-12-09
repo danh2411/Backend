@@ -87,7 +87,7 @@ class BillController extends Controller
                         'bill_id' => $data['bill_id']],
                 ));
             }
-//            Room::query()->where('id',$request->room_id)->update(['status'=>4]);
+         Room::query()->where('id',$request->room_id)->update(['status'=>4]);
             $arr = [
                 'HTTP Code' => 200,
                 'message' => "Created bill successfully",
