@@ -384,12 +384,17 @@ class BillController extends Controller
                 ];
             }
 
-            return response()->json($arr, 200);
 
         }
-//        if (){
-//
-//        }
+        if ($room->status==1){
+            Bill::query()->where('id', $request->bill)->update(['room_id'=>$request->room]);
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Done',
+                'data' => $bill,
+            ];
+        }
+        return response()->json($arr, 200);
 
     }
     public  function  billservice($id){
