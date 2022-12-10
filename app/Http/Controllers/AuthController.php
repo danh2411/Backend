@@ -40,17 +40,22 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
         $us = Account::query()->where('email', $request->email)->first();
-        $user=!empty($us)?$us->status:0;
+        $user = !empty($us) ? $us->status : 0;
         $credentials = $request->only('email', 'password');
         if ($user == 0 || !$token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-      $a=  $this->createNewToken($token);
-        if (Auth::attempt($credentials))
-            auth()->user()->generateCode();
+        $a = $this->createNewToken($token);
+        $this->sendEmail($credentials);
 
         return $a;
 
+    }
+
+    public function sendEmail($credentials)
+    {
+        if (Auth::attempt($credentials))
+            auth()->user()->generateCode();
     }
 
     public function codeEmail(Request $request)
@@ -65,19 +70,19 @@ class AuthController extends Controller
         }
 
         $get = UserCode::where('user_id', auth()->user()->id);
-           $code=$get ->first();
-        $re=!empty($code->code)?$code->code:1;
-        if ($request->code ==$re) {
-           $ab= $get->where('updated_at', '>=', now()->subMinutes(2))
-               ->first();
-           if (empty($ab)){
-               $arr = [
-                   'HTTP Code' => '200',
-                   'message' => 'Code Over',
-                   'data' => 1,
-               ];
-               return response()->json($arr, 201);
-           }
+        $code = $get->first();
+        $re = !empty($code->code) ? $code->code : 1;
+        if ($request->code == $re) {
+            $ab = $get->where('updated_at', '>=', now()->subMinutes(2))
+                ->first();
+            if (empty($ab)) {
+                $arr = [
+                    'HTTP Code' => '200',
+                    'message' => 'Code Over',
+                    'data' => 1,
+                ];
+                return response()->json($arr, 201);
+            }
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Code True',
@@ -296,17 +301,17 @@ class AuthController extends Controller
             return response()->json($validator->errors()->toJson(), 400);
         }
         $id = Auth::user()->id;
-        
 
-            Account::query()->where('id', $id)->update([
-                'name' => $request->name,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'CCCD' => $request->CCCD,
-            ]);
-            $data['HTTP Code'] = 200;
-            $data['Account'] = $id;
-            $data['message'] = 'The account was successfully updated';
+
+        Account::query()->where('id', $id)->update([
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'CCCD' => $request->CCCD,
+        ]);
+        $data['HTTP Code'] = 200;
+        $data['Account'] = $id;
+        $data['message'] = 'The account was successfully updated';
 
         return response()->json($data, 201);
     }
