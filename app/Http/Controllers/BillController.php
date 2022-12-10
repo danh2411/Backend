@@ -333,12 +333,13 @@ class BillController extends Controller
         $bill = Bill::query()->where('room_id', $id)->where('status',1)->first();
         if(!empty($bill)){
             $ser=Booked::query()->where('bill_id',$bill->id)->get();
-
+            $rooom=Room::query()->where('id',$bill->room_id);
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Bill info',
                 'data' => $bill,
-                'services'=>$ser
+                'services'=>$ser,
+                'room'=>$rooom
             ];
         }else{
             $arr = [
@@ -400,12 +401,15 @@ class BillController extends Controller
     public  function  billservice($id){
 
         $bill = Bill::query()->where('room_id', $id)->where('status',1)->first();
-        $service=Booked::query()->where('bill_id',$bill->id)->get();
+
         if(!empty($bill)){
+            $service=Booked::query()->where('bill_id',$bill->id)->get();
+            $room=Room::query()->where('id',$bill->room_id)->first();
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Bill info',
-                'data' => $service,
+                'service' => $service,
+                'room'=>$room,
             ];
         }else{
             $arr = [
@@ -417,5 +421,14 @@ class BillController extends Controller
         return response()->json($arr, 200);
 
 
+    }
+    public  function  changeservice(Request  $request){
+        $validator = Validator::make($request->all(), [
+            'bill' => 'required|numeric|min:0',
+            'service' => 'required|numeric|min:0'
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
     }
 }
