@@ -328,18 +328,10 @@ class BillController extends Controller
         }
         return response()->json($arr, 200);
     }
-    public  function  billroom(Request  $request){
-        $input = $request->all();
-        $validator = Validator::make($input, [
+    public  function  billroom($id){
 
+        $bill = Bill::query()->where('room_id', $id)->where('status',1)->first();
 
-            'room_id' => 'required|numeric|min:0',
-
-        ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-        $bill = Bill::query()->where('room_id', $request->room_id)->where('status',1)->first();
         if(!empty($bill)){
             $arr = [
                 'HTTP Code' => '200',
@@ -357,5 +349,55 @@ class BillController extends Controller
 
 
     }
+    public  function  changroom(Request  $request){
+        $validator = Validator::make($request->all(), [
+            'bill' => 'required|numeric|min:0',
+            'room' => 'required|numeric|min:0'
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+        $bill = Bill::query()->where('id', $request->bill)->where('status',1)->first();
+        $room=Room::query()->where('id',$bill->room_id)->first();
 
+        if($room->status==2){
+            $check=Room::query()->where('id',$request->room)->first();
+            if ($room->price==$check->price){
+
+                Bill::query()->where('id', $request->bill)->update(['room_id'=>$request->room]);
+                Room::query()->where('id',$request->room)->update(['status'=>2]);
+                $bill = Bill::query()->where('room_id', $request->room)->where('status',1)->first();
+
+                $arr = [
+                    'HTTP Code' => '200',
+                    'message' => 'Done',
+                    'data' => $bill,
+                ];
+            }
+            return response()->json($arr, 200);
+
+        }
+
+    }
+    public  function  billservice($id){
+
+        $bill = Bill::query()->where('room_id', $id)->where('status',1)->first();
+        $service=Booked::query()->where('bill_id',$bill->id)->get();
+        if(!empty($bill)){
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Bill info',
+                'data' => $service,
+            ];
+        }else{
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Bill not found',
+                'data' => [],
+            ];
+        }
+        return response()->json($arr, 200);
+
+
+    }
 }

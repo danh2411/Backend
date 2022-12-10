@@ -59,6 +59,7 @@ Route::middleware(['cors'])->group(function($router) {
     Route::get('/room/hiden/id={id}', [RoomController::class,'hiden'])->middleware('role:admin');
     Route::get('/room/getlist', [RoomController::class, 'roomAll'])->middleware('role:personnel');
     Route::get('/room/filter', [RoomController::class, 'filterStatus'])->middleware('role:personnel');
+    Route::get('/room/emptyroom', [RoomController::class, 'emptyroom'])->middleware('role:personnel');
 
 
 });
@@ -74,8 +75,12 @@ Route::middleware(['cors'])->group(function($router) {
     Route::post('/bill/getlistroom', [BillController::class, 'getListTotalRoomBy']);
     Route::post('/bill/getlistservice', [BillController::class, 'getListTotalServiceBy']);
     Route::post('/bill/getlist', [BillController::class, 'getListTotalBy']);
-
-    Route::post('/bill/billroom', [BillController::class, 'billroom']);
+    //services theo bill
+    Route::get('/bill/billservice/id={id}', [BillController::class, 'billservice']);
+    //room theo bill
+    Route::get('/bill/billroom/id={id}', [BillController::class, 'billroom']);
+    //chang bill
+    Route::post('/bill/changeroom', [BillController::class, 'changroom']);
 
 
 

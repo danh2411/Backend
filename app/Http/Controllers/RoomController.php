@@ -213,6 +213,22 @@ class RoomController extends Controller
 
         return response()->json($arr, 201);
     }
+    public  function emptyroom(){
+        $rooms=Room::query()->where('status',1)->get();
+        if (!empty($rooms))
+        $arr = [
+            'HTTP Code' => '200',
+            'message' => 'Successful',
+            'Rom' => $rooms,
+        ];
+        else     $arr = [
+            'HTTP Code' => '200',
+            'message' => 'Successful',
+            'Rom' => [],
+        ];
+        return response()->json($arr, 201);
+
+    }
 
 //    public function filterStatus(Request $request)
 //    {
