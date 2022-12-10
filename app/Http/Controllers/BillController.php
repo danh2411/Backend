@@ -331,12 +331,14 @@ class BillController extends Controller
     public  function  billroom($id){
 
         $bill = Bill::query()->where('room_id', $id)->where('status',1)->first();
-
         if(!empty($bill)){
+            $ser=Booked::query()->where('bill_id',$bill->id)->get();
+
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Bill info',
                 'data' => $bill,
+                'services'=>$ser
             ];
         }else{
             $arr = [
@@ -374,9 +376,20 @@ class BillController extends Controller
                     'data' => $bill,
                 ];
             }
+            else{
+                $arr = [
+                    'HTTP Code' => '200',
+                    'message' => 'Not the same price',
+                    'data' => [],
+                ];
+            }
+
             return response()->json($arr, 200);
 
         }
+//        if (){
+//
+//        }
 
     }
     public  function  billservice($id){
