@@ -126,7 +126,27 @@ class RoomController extends Controller
         }
 
     }
+public  function  clearroom($id){
+    $user = Room::query()->where('id', $id)->first();
+    if (!empty($user)){
+        Room::where('id', $id)->update(
+            ['status' => 1]
+        );
+        $arr = [
+            'HTTP Code' => '200',
+            'message' => 'Room status change successful ',
+            'Rom' => $id,
+        ];
+    }else{
+        $arr = [
+            'HTTP Code' => '200',
+            'message' => 'Room not found ',
+            'Rom' => [],
+        ];
+    }
+    return response()->json($arr, 201);
 
+}
 
     //hiden
     public function hiden(Request $request, $id)
