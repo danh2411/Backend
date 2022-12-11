@@ -246,6 +246,7 @@ class RoomController extends Controller
         if (isset($request->from)) {
             $from = Carbon::parse($request->from)->timestamp;
             $to = Carbon::parse($request->to)->timestamp;
+
 //            if ($request->status_room == 4 || $request->status_room == 2) {
                 $test = Room::all();
 
@@ -260,14 +261,23 @@ class RoomController extends Controller
                 }
 
                 if ($request->status_room==4){
-                    foreach ($ok as $b){
-                        $rooms[]=Room::query()->find($b)->where('status','<>',$request->status_room);
+                    if (!empty($ok)){
+                        foreach ($ok as $b){
+                            $rooms[]=Room::query()->find($b)->where('status','<>',$request->status_room);
+                        }
+                        $arr = [
+                            'HTTP Code' => '200',
+                            'message' => 'Successful',
+                            'Rom' => $rooms,
+                        ];
+                    }else{
+                        $arr = [
+                            'HTTP Code' => '200',
+                            'message' => 'Successful',
+                            'Rom' => [],
+                        ];
                     }
-                    $arr = [
-                        'HTTP Code' => '200',
-                        'message' => 'Successful',
-                        'Rom' => $rooms,
-                    ];
+
                     return response()->json($arr, 201);
                 }
                 if ($request->status_room==1){
