@@ -60,7 +60,7 @@ Route::middleware(['cors'])->group(function($router) {
     Route::get('/room/getlist', [RoomController::class, 'roomAll'])->middleware('role:personnel');
     Route::get('/room/filter', [RoomController::class, 'filterStatus'])->middleware('role:personnel|cleaners');
     Route::get('/room/emptyroom', [RoomController::class, 'emptyroom'])->middleware('role:personnel');
-    Route::get('/room/clearroom', [RoomController::class, 'clearroom'])->middleware('role:cleaners');
+    Route::get('/room/clearroom/id={id}', [RoomController::class, 'clearroom'])->middleware('role:cleaners');
 
 
 });
