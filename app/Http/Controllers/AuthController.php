@@ -73,7 +73,7 @@ class AuthController extends Controller
         $code = $get->first();
         $re = !empty($code->code) ? $code->code : 1;
         if ($request->code == $re) {
-            $ab = $get->where('updated_at', '>=', now()->subMinutes(2))
+            $ab = $get->where('updated_at', '>=', now()->subMinutes(5))
                 ->first();
             if (empty($ab)) {
                 $arr = [

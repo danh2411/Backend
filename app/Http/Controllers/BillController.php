@@ -508,4 +508,25 @@ class BillController extends Controller
         return response()->json($arr, 200);
 
     }
+    public function  clientroom($id){
+        $bill = Bill::query()->where([['room_id',$id],['status', 1]])->first();
+
+        if (!empty($bill)){
+            $client=Client::query()->where('id',$bill->client_id)->first();
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Client',
+                'data' =>$client,
+            ];
+        }
+        else{
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Bill not found',
+                'data' =>[],
+            ];
+        }
+        return response()->json($arr, 200);
+
+    }
 }
