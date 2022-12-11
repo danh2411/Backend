@@ -261,20 +261,29 @@ class RoomController extends Controller
 
                 if ($request->status_room==4){
                     foreach ($ok as $b){
-                        $rooms[]=Room::query()->find($b);
+                        $rooms[]=Room::query()->find($b)->where('status','<>',$request->status_room);
                     }
+                    $arr = [
+                        'HTTP Code' => '200',
+                        'message' => 'Successful',
+                        'Rom' => $rooms,
+                    ];
+                    return response()->json($arr, 201);
                 }
                 if ($request->status_room==1){
                     foreach ($not as $a){
                         $rooms[]=Room::query()->where([['id',$a],['status',$request->status_room]])->get();
 
                     }
+
+                    $arr = [
+                        'HTTP Code' => '200',
+                        'message' => 'Successful',
+                        'Rom' => $rooms,
+                    ];
+                    return response()->json($arr, 201);
                 }
-                $arr = [
-                    'HTTP Code' => '200',
-                    'message' => 'Successful',
-                    'Rom' => $rooms,
-                ];
+
              if($request->status_room==2||$request->status_room=3) {
 
                 $rooms[] = Room::query()->where('status', $request->status_room)->get();
