@@ -155,81 +155,6 @@ class RoomController extends Controller
         return response()->json($arr, 201);
     }
 
-    public function filterStatus(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'status_bill' => 'numeric|between:0,3',
-            'status_room' => 'numeric|between:0,4',
-            'from' => 'string',
-            'to' => 'string',
-
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-        if (isset($request->from)) {
-            $from = Carbon::parse($request->from)->timestamp;
-            $to = Carbon::parse($request->to)->timestamp;
-            if ($request->status_room == 4 || $request->status_room == 2) {
-                $query = Bill::query()->whereBetween('day_in', [$from, $to + 86399])->where('status', $request->status_bill);
-               $a= $query->first();
-                if (!empty($a)) {
-                    $bill= Bill::query()->whereBetween('day_in', [$from, $to + 86399])->where('status', $request->status_bill)->get();
-
-                    foreach ($bill as $b) {
-                        $rooms[] = Room::query()->where([['id', $b->room_id], ['status', $request->status_room]])->get();
-
-                    }
-                } else {
-                    $rooms =null;
-                }
-                $arr = [
-                    'HTTP Code' => '200',
-                    'message' => 'Successful',
-                    'Rom' => $rooms,
-                ];
-            } else {
-
-                $rooms[] = Room::query()->where('status',1 )->orWhere('status',2 )->get();
-
-                $arr = [
-                    'HTTP Code' => '200',
-                    'message' => 'Successful',
-                    'Rom' => $rooms,
-                ];
-            }
-
-
-        } else {
-            $rooms = Room::query()->where('status', $request->status_room)->get();
-            $arr = [
-                'HTTP Code' => '200',
-                'message' => 'Successful',
-                'Rom' => $rooms,
-            ];
-        }
-
-
-        return response()->json($arr, 201);
-    }
-    public  function emptyroom(){
-        $rooms=Room::query()->where('status',1)->get();
-        if (!empty($rooms))
-        $arr = [
-            'HTTP Code' => '200',
-            'message' => 'Successful',
-            'Rom' => $rooms,
-        ];
-        else     $arr = [
-            'HTTP Code' => '200',
-            'message' => 'Successful',
-            'Rom' => [],
-        ];
-        return response()->json($arr, 201);
-
-    }
-
 //    public function filterStatus(Request $request)
 //    {
 //        $validator = Validator::make($request->all(), [
@@ -246,45 +171,34 @@ class RoomController extends Controller
 //        if (isset($request->from)) {
 //            $from = Carbon::parse($request->from)->timestamp;
 //            $to = Carbon::parse($request->to)->timestamp;
-////            if ($request->status_room == 4 || $request->status_room == 2) {
-//                $test = Room::all();
+//            if ($request->status_room == 4 || $request->status_room == 2) {
+//                $query = Bill::query()->whereBetween('day_in', [$from, $to + 86399])->where('status', $request->status_bill);
+//               $a= $query->first();
+//                if (!empty($a)) {
+//                    $bill= Bill::query()->whereBetween('day_in', [$from, $to + 86399])->where('status', $request->status_bill)->get();
 //
-//                foreach ($test as $ab) {
-//                    $query = Bill::query()->whereBetween('day_in', [$from, $to + 86399])
-//                        ->where('status', $request->status_bill)->where('room_id', $ab->id)->exists();
-//                  if ($query==true){
-//                        $ok[]=$ab->id;
-//                    }else{
-//                        $not[]=$ab->id;
-//                    }
-//                }
-//
-//                if ($request->status_room==4){
-//                    foreach ($ok as $b){
-//                        $rooms[]=Room::query()->find($b);
-//                    }
-//                }
-//                if ($request->status_room==1||$request->status_room==3){
-//                    foreach ($not as $b){
-//                        $rooms[]=Room::query()->find($b)->where('status',$request->status_room)->get();
+//                    foreach ($bill as $b) {
+//                        $rooms[] = Room::query()->where([['id', $b->room_id], ['status', $request->status_room]])->get();
 //
 //                    }
+//                } else {
+//                    $rooms =null;
 //                }
 //                $arr = [
 //                    'HTTP Code' => '200',
 //                    'message' => 'Successful',
 //                    'Rom' => $rooms,
 //                ];
-////            } else {
-////
-////                $rooms[] = Room::query()->where('status', 1)->orWhere('status', 2)->get();
-////
-////                $arr = [
-////                    'HTTP Code' => '200',
-////                    'message' => 'Successful',
-////                    'Rom' => $rooms,
-////                ];
-////            }
+//            } else {
+//
+//                $rooms[] = Room::query()->where('status',1 )->orWhere('status',2 )->get();
+//
+//                $arr = [
+//                    'HTTP Code' => '200',
+//                    'message' => 'Successful',
+//                    'Rom' => $rooms,
+//                ];
+//            }
 //
 //
 //        } else {
@@ -299,6 +213,92 @@ class RoomController extends Controller
 //
 //        return response()->json($arr, 201);
 //    }
+//    public  function emptyroom(){
+//        $rooms=Room::query()->where('status',1)->get();
+//        if (!empty($rooms))
+//        $arr = [
+//            'HTTP Code' => '200',
+//            'message' => 'Successful',
+//            'Rom' => $rooms,
+//        ];
+//        else     $arr = [
+//            'HTTP Code' => '200',
+//            'message' => 'Successful',
+//            'Rom' => [],
+//        ];
+//        return response()->json($arr, 201);
+//
+//    }
+
+    public function filterStatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'status_bill' => 'numeric|between:0,3',
+            'status_room' => 'numeric|between:0,4',
+            'from' => 'string',
+            'to' => 'string',
+
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+        if (isset($request->from)) {
+            $from = Carbon::parse($request->from)->timestamp;
+            $to = Carbon::parse($request->to)->timestamp;
+//            if ($request->status_room == 4 || $request->status_room == 2) {
+                $test = Room::all();
+
+                foreach ($test as $ab) {
+                    $query = Bill::query()->whereBetween('day_in', [$from, $to + 86399])
+                        ->where('status', $request->status_bill)->where('room_id', $ab->id)->exists();
+                  if ($query==true){
+                        $ok[]=$ab->id;
+                    }else{
+                        $not[]=$ab->id;
+                    }
+                }
+
+                if ($request->status_room==4){
+                    foreach ($ok as $b){
+                        $rooms[]=Room::query()->find($b);
+                    }
+                }
+                if ($request->status_room==1){
+                    foreach ($not as $a){
+                        $rooms[]=Room::query()->where([['id',$a],['status',$request->status_room]])->get();
+
+                    }
+                }
+                $arr = [
+                    'HTTP Code' => '200',
+                    'message' => 'Successful',
+                    'Rom' => $rooms,
+                ];
+//            } else {
+//
+//                $rooms[] = Room::query()->where('status', 1)->orWhere('status', 2)->get();
+//
+//                $arr = [
+//                    'HTTP Code' => '200',
+//                    'message' => 'Successful',
+//                    'Rom' => $rooms,
+//                ];
+//            }
+
+
+        } else {
+            $rooms = Room::query()->where('status', $request->status_room)->get();
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Successful',
+                'Rom' => $rooms,
+            ];
+        }
+
+
+        return response()->json($arr, 201);
+    }
 
 
 }
