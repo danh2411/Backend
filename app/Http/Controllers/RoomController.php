@@ -275,16 +275,16 @@ class RoomController extends Controller
                     'message' => 'Successful',
                     'Rom' => $rooms,
                 ];
-//            } else {
-//
-//                $rooms[] = Room::query()->where('status', 1)->orWhere('status', 2)->get();
-//
-//                $arr = [
-//                    'HTTP Code' => '200',
-//                    'message' => 'Successful',
-//                    'Rom' => $rooms,
-//                ];
-//            }
+             if($request->status_room==2||$request->status_room=3) {
+
+                $rooms[] = Room::query()->where('status', $request->status_room)->get();
+
+                $arr = [
+                    'HTTP Code' => '200',
+                    'message' => 'Successful',
+                    'Rom' => $rooms,
+                ];
+            }
 
 
         } else {
