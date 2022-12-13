@@ -360,7 +360,10 @@ class BillController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'bill' => 'required|numeric|min:0',
-            'room' => 'required|numeric|min:0'
+            'room' => 'required|numeric|min:0',
+            'total_room_rate' => 'required|numeric|min:0',
+            'total_money'=>'required|numeric|min:0',
+
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
@@ -372,7 +375,10 @@ class BillController extends Controller
             $check = Room::query()->where('id', $request->room)->first();
             if ($room->price == $check->price) {
 
-                Bill::query()->where('id', $request->bill)->update(['room_id' => $request->room]);
+                Bill::query()->where('id', $request->bill)->update(['room_id' => $request->room,
+                    'total_room_rate'=>$request->total_room_rate,
+                    'total_money'=>$request->total_money
+                ]);
                 Room::query()->where('id', $request->room)->update(['status' => 2]);
                 $bill = Bill::query()->where('room_id', $request->room)->where('status', 1)->first();
 
