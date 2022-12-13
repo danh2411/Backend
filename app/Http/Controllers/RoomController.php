@@ -283,7 +283,7 @@ public  function  clearroom($id){
                 if ($request->status_room==4){
                     if (!empty($ok)){
                         foreach ($ok as $b){
-                            $rooms[]=Room::query()->find($b)->where('status','<>',$request->status_room);
+                            $rooms[]=Room::query()->find($b);
                         }
                         $arr = [
                             'HTTP Code' => '200',
