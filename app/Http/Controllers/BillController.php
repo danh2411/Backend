@@ -356,13 +356,28 @@ class BillController extends Controller
 
     }
 
-    public function changroom(Request $request)
+    public function roomprice($id)
+    {
+        $room = Room::query()->where('id', $id)->first();
+
+        $price = Room::query()->where('price', $room->price)->get();
+        $arr = [
+            'HTTP Code' => '200',
+            'message' => 'Bill not found',
+            'data' => $price,
+        ];
+
+        return response()->json($arr, 200);
+    }
+
+    public
+    function changroom(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'bill' => 'required|numeric|min:0',
             'room' => 'required|numeric|min:0',
             'total_room_rate' => 'required|numeric|min:0',
-            'total_money'=>'required|numeric|min:0',
+            'total_money' => 'required|numeric|min:0',
 
         ]);
         if ($validator->fails()) {
@@ -376,8 +391,8 @@ class BillController extends Controller
             if ($room->price == $check->price) {
 
                 Bill::query()->where('id', $request->bill)->update(['room_id' => $request->room,
-                    'total_room_rate'=>$request->total_room_rate,
-                    'total_money'=>$request->total_money
+                    'total_room_rate' => $request->total_room_rate,
+                    'total_money' => $request->total_money
                 ]);
                 Room::query()->where('id', $request->room)->update(['status' => 2]);
                 $bill = Bill::query()->where('room_id', $request->room)->where('status', 1)->first();
@@ -409,7 +424,8 @@ class BillController extends Controller
 
     }
 
-    public function billservice($id)
+    public
+    function billservice($id)
     {
 
         $bill = Bill::query()->where('room_id', $id)->where('status', 1)->first();
@@ -436,7 +452,8 @@ class BillController extends Controller
 
     }
 
-    public function addservice(Request $request)
+    public
+    function addservice(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'bill' => 'required|numeric|min:0',
@@ -447,28 +464,26 @@ class BillController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-        $bill = Bill::query()->where([['id', $request->bill],['status', 1]])->first();
+        $bill = Bill::query()->where([['id', $request->bill], ['status', 1]])->first();
         if (!empty($bill)) {
             $ser = Services::query()->where('id', $request->service)->first();
-            if (!empty($ser->id))
-            {
+            if (!empty($ser->id)) {
                 Booked::query()->create(array_merge(
                     ['client_id' => $bill->client_id,
                         'services_id' => $ser->id,
                         'amount' => $request->amount,
                         'bill_id' => $bill->id],
                 ));
-                $price=$ser->price*$request->amount+$bill->total_service_fee;
-                Bill::query()->where('id', $request->bill)->update(['total_service_fee'=>$price]);
-                $bill = Bill::query()->where([['id', $request->bill],['status', 1]])->first();
+                $price = $ser->price * $request->amount + $bill->total_service_fee;
+                Bill::query()->where('id', $request->bill)->update(['total_service_fee' => $price]);
+                $bill = Bill::query()->where([['id', $request->bill], ['status', 1]])->first();
 
                 $arr = [
                     'HTTP Code' => '200',
                     'message' => 'Service not found',
                     'bill' => $bill,
                 ];
-            }
-            else{
+            } else {
                 $arr = [
                     'HTTP Code' => '200',
                     'message' => 'Service not found',
@@ -476,8 +491,7 @@ class BillController extends Controller
                 ];
             }
 
-        }
-        else{
+        } else {
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Bill not found',
@@ -487,7 +501,10 @@ class BillController extends Controller
         return response()->json($arr, 200);
 
     }
-    public  function  deletesevice(Request $request){
+
+    public
+    function deletesevice(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'bill' => 'required|numeric|min:0',
             'service' => 'required|numeric|min:0',
@@ -503,8 +520,7 @@ class BillController extends Controller
                 'message' => 'Done',
 
             ];
-        }
-        else{
+        } else {
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Bill not found',
@@ -514,22 +530,24 @@ class BillController extends Controller
         return response()->json($arr, 200);
 
     }
-    public function  clientroom($id){
-        $bill = Bill::query()->where([['room_id',$id],['status', 1]])->first();
 
-        if (!empty($bill)){
-            $client=Client::query()->where('id',$bill->client_id)->first();
+    public
+    function clientroom($id)
+    {
+        $bill = Bill::query()->where([['room_id', $id], ['status', 1]])->first();
+
+        if (!empty($bill)) {
+            $client = Client::query()->where('id', $bill->client_id)->first();
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Client',
-                'data' =>$client,
+                'data' => $client,
             ];
-        }
-        else{
+        } else {
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Bill not found',
-                'data' =>[],
+                'data' => [],
             ];
         }
         return response()->json($arr, 200);
