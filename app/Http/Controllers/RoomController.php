@@ -253,7 +253,7 @@ public  function  clearroom($id){
     public function filterStatus(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'status_bill' => 'numeric|between:0,3',
+            'status_bill' => 'numeric|between:0,4',
             'status_room' => 'numeric|between:0,4',
             'from' => 'string',
             'to' => 'string',
