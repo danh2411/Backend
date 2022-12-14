@@ -395,7 +395,8 @@ class BillController extends Controller
                     'total_room_rate' => $request->total_room_rate,
                     'total_money' => $request->total_money
                 ]);
-                Room::query()->where('id', $request->room)->update(['status' => 3]);
+                Room::query()->where('id', $bill->room_id)->update(['status' => 3]);
+                Room::query()->where('id', $request->room)->update(['status' => 2]);
                 $bill = Bill::query()->where('room_id', $request->room)->where('status', 1)->first();
 
                 $arr = [
