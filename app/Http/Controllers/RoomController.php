@@ -271,8 +271,10 @@ public  function  clearroom($id){
                 $test = Room::all();
 
                 foreach ($test as $ab) {
-                    $query = Bill::query()->whereBetween('day_in', [$from, $to + 86399])
+                    $query = Bill::query()->where('day_out','>=',$from)
                         ->where('status', $request->status_bill)->where('room_id', $ab->id)->exists();
+
+
                   if ($query==true){
                         $ok[]=$ab->id;
                     }else{

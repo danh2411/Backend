@@ -55,12 +55,13 @@ class BillController extends Controller
             $dat[] = $book->price;
         }
         $price_service = array_sum($dat) * $sl;
-        $room = Room::query()->find($request->room_id)->first();
+        $room = Room::query()->find($request->room_id);
+      
         //timestamp
         $day_in = Carbon::parse($request->day_in)->timestamp;
         $day_out = Carbon::parse($request->day_out)->timestamp;
         $price = ($day_out - $day_in) / 86400 * $room->price;
-
+           
         $total = $price_service + $price;
         $client = Client::find($request->client_id);
 
@@ -87,7 +88,7 @@ class BillController extends Controller
                         'bill_id' => $data['bill_id']],
                 ));
             }
-            Room::query()->where('id', $request->room_id)->update(['status' => 4]);
+          
             $arr = [
                 'HTTP Code' => 200,
                 'message' => "Created bill successfully",
@@ -304,7 +305,7 @@ class BillController extends Controller
         $room = Room::query()->find($request->room_id);
         // dd($room);
         if ($room->id) {
-            if ($room->status == 4) {
+            if ($room->status == 1) {
                 $name = Room::query()->where('id', $room->id)->update(['status' => 2]);
 
 

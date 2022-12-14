@@ -86,7 +86,7 @@ Route::middleware(['cors'])->group(function($router) {
     Route::post('/bill/addservice', [BillController::class, 'addservice']);
     Route::post('/bill/deletesevice', [BillController::class, 'deletesevice']);
     Route::get('/bill/clientroom/id={id}', [BillController::class, 'clientroom']);
-    Route::get('/bill/priceroom/id={id}', [BillController::class, 'roomprice']);
+    Route::get('/bill/priceroom/id={id}', [BillController::class, 'roomprice ']);
 
 
 
