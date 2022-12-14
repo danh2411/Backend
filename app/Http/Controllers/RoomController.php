@@ -290,7 +290,7 @@ public  function  clearroom($id){
                 $test = Room::all();
 
                 foreach ($test as $ab) {
-                    $query = Bill::query()->where('day_out','>=',$from)->where('day_in','=<',$to)
+                    $query = Bill::query()->where('day_out','>=',$from)->where('day_in','<',$to)
                         ->where('status', $request->status_bill)->where('room_id', $ab->id)->exists();
 
 
