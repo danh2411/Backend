@@ -62,7 +62,7 @@ Route::middleware(['cors'])->group(function ($router) {
     Route::get('/room/emptyroom', [RoomController::class, 'emptyroom'])->middleware('role:personnel');
     Route::get('/room/clearroom/id={id}', [RoomController::class, 'clearroom'])->middleware('role:cleaners');
 
-
+    Route::get('/room/getid/id={id}', [RoomController::class, 'getId']);
 });
 
 //bills
@@ -76,6 +76,8 @@ Route::middleware(['cors', 'role:personnel'])->group(function ($router) {
     Route::post('/bill/getlistroom', [BillController::class, 'getListTotalRoomBy']);
     Route::post('/bill/getlistservice', [BillController::class, 'getListTotalServiceBy']);
     Route::post('/bill/getlist', [BillController::class, 'getListTotalBy']);
+
+
     //services theo bill
     Route::get('/bill/billservice/id={id}', [BillController::class, 'billservice']);
     //room theo bill

@@ -18,42 +18,89 @@ class RoomController extends Controller
     }
 
     //  get list
-    public function roomAll(Request $request)
+//    public function roomAll(Request $request)
+//    {
+//        $validator = Validator::make($request->all(), [
+//            'id' => 'numeric',
+//
+//        ]);
+//        $total = 1;
+//        $page = 1;
+//        $perpage = 1;
+//        if ($validator->fails()) {
+//            return response()->json($validator->errors()->toJson(), 400);
+//        }
+//        if (!empty($request->id)) {
+//            $user = Room::where('id', $request->id)->get();
+//
+//            if (!empty($user->id)) {
+//                $arr['message'] = 'Find successful room: ' . $request->id;
+//            } else {
+//                $arr['message'] = 'No Room:' . $request->id . ' found';
+//            }
+//        } else {
+//
+//
+//            $query = Room::query();
+//            $perpage = $request->input('perpage', 9);
+//            $page = $request->input('page', 1);
+//            $total = $query->count();
+//            $user = $query->offset(($page - 1) * $perpage)->limit($perpage)->get();
+//
+//
+//            $arr['message'] = 'All Rooms';
+//
+//        }
+//        $arr['HTTP Code'] = '200';
+//
+//        $arr['total'] = $total;
+//        $arr['page'] = $page;
+//        $arr['last_page'] = ceil($total / $perpage);
+//        $arr['data'] = $user;
+//
+//        return response()->json($arr, 201);
+//
+//    }
+    public function roomAll()
     {
-        $validator = Validator::make($request->all(), [
-            'id' => 'numeric',
-
-        ]);
-        $total = 1;
-        $page = 1;
-        $perpage = 1;
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-        if (!empty($request->id)) {
-            $user = Room::where('id', $request->id)->get();
-
-            if (!empty($user->id)) {
-                $arr['message'] = 'Find successful room: ' . $request->id;
-            } else {
-                $arr['message'] = 'No Room:' . $request->id . ' found';
-            }
+        $room = Room::all();
+        if (!empty($room)) {
+            $arr = [
+                'HTTP Code' => 200,
+                'message' => " room successfully",
+                'data' => $room
+            ];
         } else {
-
-
-            $query = Room::query();
-            $perpage = $request->input('perpage', 9);
-            $page = $request->input('page', 1);
-            $total = $query->count();
-            $user = $query->offset(($page - 1) * $perpage)->limit($perpage)->get();
-
-
-            $arr['message'] = 'All Rooms';
+            $arr = [
+                'HTTP Code' => 200,
+                'message' => "  room successfully",
+                'data' => []
+            ];
 
         }
-    return response()->json($arr, 201);
+        return response()->json($arr, 201);
 
-}
+    }
+
+    public function getId($id)
+    {
+        $room = Room::query()->find($id);
+        if (!empty($room)) {
+            $arr = [
+                'HTTP Code' => 200,
+                'message' => " room successfully",
+                'data' => $room
+            ];
+        } else {
+            $arr = [
+                'HTTP Code' => 200,
+                'message' => "  room successfully",
+                'data' => []
+            ];
+
+        }
+        return response()->json($arr, 201);
+    }
 
     //create
     public function create(Request $request)
@@ -85,7 +132,7 @@ class RoomController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
 
-            'name_room' => 'required|string|unique:rooms,name_room,'.$id,
+            'name_room' => 'required|string|unique:rooms,name_room,' . $id,
             'typ_room' => 'required',
             'price' => 'required|numeric|min:0',
             'capacity' => 'required|integer|min:1|max:20',
@@ -119,27 +166,29 @@ class RoomController extends Controller
         }
 
     }
-public  function  clearroom($id){
-    $user = Room::query()->where('id', $id)->first();
-    if (!empty($user)){
-        Room::where('id', $id)->update(
-            ['status' => 1]
-        );
-        $arr = [
-            'HTTP Code' => '200',
-            'message' => 'Room status change successful ',
-            'Rom' => $id,
-        ];
-    }else{
-        $arr = [
-            'HTTP Code' => '200',
-            'message' => 'Room not found ',
-            'Rom' => [],
-        ];
-    }
-    return response()->json($arr, 201);
 
-}
+    public function clearroom($id)
+    {
+        $user = Room::query()->where('id', $id)->first();
+        if (!empty($user)) {
+            Room::where('id', $id)->update(
+                ['status' => 1]
+            );
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Room status change successful ',
+                'Rom' => $id,
+            ];
+        } else {
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Room not found ',
+                'Rom' => [],
+            ];
+        }
+        return response()->json($arr, 201);
+
+    }
 
     //hiden
     public function hiden(Request $request, $id)
@@ -261,55 +310,55 @@ public  function  clearroom($id){
             $to = Carbon::parse($request->to)->timestamp;
 
 //            if ($request->status_room == 4 || $request->status_room == 2) {
-                $test = Room::all();
+            $test = Room::all();
 
-                foreach ($test as $ab) {
-                    $query = Bill::query()->where('day_out','>=',$from)->where('day_in','<',$to)
-                        ->where('status', $request->status_bill)->where('room_id', $ab->id)->exists();
+            foreach ($test as $ab) {
+                $query = Bill::query()->where('day_out', '>=', $from)->where('day_in', '<', $to)
+                    ->where('status', $request->status_bill)->where('room_id', $ab->id)->exists();
 
 
-                  if ($query==true){
-                        $ok[]=$ab->id;
-                    }else{
-                        $not[]=$ab->id;
-                    }
+                if ($query == true) {
+                    $ok[] = $ab->id;
+                } else {
+                    $not[] = $ab->id;
                 }
+            }
 
-                if ($request->status_room==4){
-                    if (!empty($ok)){
-                        foreach ($ok as $b){
-                            $rooms[]=Room::query()->find($b);
-                        }
-                        $arr = [
-                            'HTTP Code' => '200',
-                            'message' => 'Successful',
-                            'Rom' => $rooms,
-                        ];
-                    }else{
-                        $arr = [
-                            'HTTP Code' => '200',
-                            'message' => 'Successful',
-                            'Rom' => [],
-                        ];
+            if ($request->status_room == 4) {
+                if (!empty($ok)) {
+                    foreach ($ok as $b) {
+                        $rooms[] = Room::query()->find($b);
                     }
-
-                    return response()->json($arr, 201);
-                }
-                if ($request->status_room==1){
-                    foreach ($not as $a){
-                        $rooms[]=Room::query()->where([['id',$a],['status',$request->status_room]])->get();
-
-                    }
-
                     $arr = [
                         'HTTP Code' => '200',
                         'message' => 'Successful',
                         'Rom' => $rooms,
                     ];
-                    return response()->json($arr, 201);
+                } else {
+                    $arr = [
+                        'HTTP Code' => '200',
+                        'message' => 'Successful',
+                        'Rom' => [],
+                    ];
                 }
 
-             if($request->status_room==2||$request->status_room=3) {
+                return response()->json($arr, 201);
+            }
+            if ($request->status_room == 1) {
+                foreach ($not as $a) {
+                    $rooms[] = Room::query()->where([['id', $a], ['status', $request->status_room]])->get();
+
+                }
+
+                $arr = [
+                    'HTTP Code' => '200',
+                    'message' => 'Successful',
+                    'Rom' => $rooms,
+                ];
+                return response()->json($arr, 201);
+            }
+
+            if ($request->status_room == 2 || $request->status_room = 3) {
 
                 $rooms[] = Room::query()->where('status', $request->status_room)->get();
 
