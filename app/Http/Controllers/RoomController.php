@@ -18,63 +18,37 @@ class RoomController extends Controller
     }
 
     //  get list
-//    public function roomAll(Request $request)
-//    {
-//        $validator = Validator::make($request->all(), [
-//            'id' => 'numeric',
-//
-//        ]);
-//        $total = 1;
-//        $page = 1;
-//        $perpage = 1;
-//        if ($validator->fails()) {
-//            return response()->json($validator->errors()->toJson(), 400);
-//        }
-//        if (!empty($request->id)) {
-//            $user = Room::where('id', $request->id)->get();
-//
-//            if (!empty($user->id)) {
-//                $arr['message'] = 'Find successful room: ' . $request->id;
-//            } else {
-//                $arr['message'] = 'No Room:' . $request->id . ' found';
-//            }
-//        } else {
-//
-//
-//            $query = Room::query();
-//            $perpage = $request->input('perpage', 9);
-//            $page = $request->input('page', 1);
-//            $total = $query->count();
-//            $user = $query->offset(($page - 1) * $perpage)->limit($perpage)->get();
-//
-//
-//            $arr['message'] = 'All Rooms';
-//
-//        }
-//        $arr['HTTP Code'] = '200';
-//
-//        $arr['total'] = $total;
-//        $arr['page'] = $page;
-//        $arr['last_page'] = ceil($total / $perpage);
-//        $arr['data'] = $user;
-//
-//        return response()->json($arr, 201);
-//
-//    }
-public  function  roomAll(){
-        $room=Room::all();
-        if (!empty($room)){
-            $arr = [
-                'HTTP Code' => 200,
-                'message' => " room successfully",
-                'data' => $room
-            ];
-        }else{
-            $arr = [
-                'HTTP Code' => 200,
-                'message' => "  room successfully",
-                'data' => []
-            ];
+    public function roomAll(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'numeric',
+
+        ]);
+        $total = 1;
+        $page = 1;
+        $perpage = 1;
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+        if (!empty($request->id)) {
+            $user = Room::where('id', $request->id)->get();
+
+            if (!empty($user->id)) {
+                $arr['message'] = 'Find successful room: ' . $request->id;
+            } else {
+                $arr['message'] = 'No Room:' . $request->id . ' found';
+            }
+        } else {
+
+
+            $query = Room::query();
+            $perpage = $request->input('perpage', 9);
+            $page = $request->input('page', 1);
+            $total = $query->count();
+            $user = $query->offset(($page - 1) * $perpage)->limit($perpage)->get();
+
+
+            $arr['message'] = 'All Rooms';
 
         }
     return response()->json($arr, 201);
