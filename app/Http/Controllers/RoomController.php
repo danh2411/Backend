@@ -305,10 +305,20 @@ class RoomController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
+
         if (isset($request->from)) {
             $from = Carbon::parse($request->from)->timestamp;
             $to = Carbon::parse($request->to)->timestamp;
-
+            $da= date( "Y-m-d" , now()->timestamp );
+            $date  = Carbon::parse($da)->timestamp;
+            if ($from<$date){
+                $mess=['from'=>"Please select a future date"];
+                return response()->json(json_encode($mess), 400);
+            }
+            if ($to<$date||$to<=$from){
+                $mess=['to'=>"Please select a future date"];
+                return response()->json(json_encode($mess), 400);
+            }
 //            if ($request->status_room == 4 || $request->status_room == 2) {
             $test = Room::all();
 
@@ -327,7 +337,7 @@ class RoomController extends Controller
             if ($request->status_room == 4) {
                 if (!empty($ok)) {
                     foreach ($ok as $b) {
-                        $rooms[] = Room::query()->find($b);
+                        $rooms[] = Room::query()->where('id',$b)->where('status','<>',2)->get();
                     }
                     $arr = [
                         'HTTP Code' => '200',

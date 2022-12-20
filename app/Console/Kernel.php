@@ -19,7 +19,7 @@ class Kernel extends ConsoleKernel
     ];
     protected function schedule(Schedule $schedule)
     {       // $schedule->command('reset:room')->everyFiveMinutes()
-         $schedule->command('reset:room')->dailyAt('14:01');
+         $schedule->command('reset:room')->dailyAt('12:01');
     }
 
     /**

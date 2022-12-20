@@ -51,9 +51,9 @@ class RessetCommand extends Command
                 Room::query()->where('id',$b->room_id)->update(
                     ['status' => 1]
                 );
-              Bill::query()->where('id',$b->id)->update(['status'=>3]);
+                Bill::query()->where('id',$b->id)->update(['status'=>3]);
             }
-
+            Bill::query()->where('id',$b->id)->update(['status'=>3]);
         }
         $this->info('Demo:Cron Cummand Run successfully!');
     }
