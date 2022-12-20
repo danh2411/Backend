@@ -45,14 +45,14 @@ class BillController extends Controller
             return response()->json($validator->errors()->toJson(), 400);
         }    $da= date( "Y-m-d H:i:s" , now()->timestamp );
         $date  = Carbon::parse($da)->timestamp;
-        $day_in = Carbon::parse($request->day_in)->timestamp+46800;
-        $day_out = Carbon::parse($request->day_out)->timestamp+46800;
+        $day_in = Carbon::parse($request->day_in)->timestamp;
+        $day_out = Carbon::parse($request->day_out)->timestamp;
 
-        if ($day_in<$date){
+        if ($day_in+46800<$date){
             $mess=['day_in'=>"Please select a future date"];
             return response()->json(json_encode($mess), 400);
         }
-        if ($day_out<$date||$day_out<=$day_in){
+        if ($day_out+46800<$date||$day_out<=$day_in){
             $mess=['day_out'=>"Please select a future date"];
             return response()->json(json_encode($mess), 400);
         }
