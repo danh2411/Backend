@@ -43,17 +43,18 @@ class BillController extends Controller
 
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
-        }    $da= date( "Y-m-d H:i:s" , now()->timestamp );
-        $date  = Carbon::parse($da)->timestamp;
+        }
+        $da = date("Y-m-d H:i:s", now()->timestamp);
+        $date = Carbon::parse($da)->timestamp;
         $day_in = Carbon::parse($request->day_in)->timestamp;
         $day_out = Carbon::parse($request->day_out)->timestamp;
 
-        if ($day_in+46800<$date){
-            $mess=['day_in'=>"Please select a future date"];
+        if ($day_in + 46800 < $date) {
+            $mess = ['day_in' => "Please select a future date"];
             return response()->json(json_encode($mess), 400);
         }
-        if ($day_out+46800<$date||$day_out<=$day_in){
-            $mess=['day_out'=>"Please select a future date"];
+        if ($day_out + 46800 < $date || $day_out <= $day_in) {
+            $mess = ['day_out' => "Please select a future date"];
             return response()->json(json_encode($mess), 400);
         }
 
@@ -231,16 +232,25 @@ class BillController extends Controller
     {
         $bill = Bill::query()->where('id', $id)->first();
 
-        if (!empty($bill)) {
-            $status = $bill->status === 1 ? 0 : 1;
-            $user = Bill::where('id', $id)->update(
-                ['status' => $status]
-            );
-            $arr = [
-                'HTTP Code' => '200',
-                'message' => 'Client status change successful ',
-                'client' => $id,
-            ];
+        if (!empty($bill) && $bill->status = 1) {
+            if ($bill->status = 1 || $bill->status = 0) {
+                $status = $bill->status == 1 ? 0 : 1;
+                $user = Bill::where('id', $id)->update(
+                    ['status' => $status]
+                );
+                $arr = [
+                    'HTTP Code' => '200',
+                    'message' => 'Bill status change successful ',
+                    'client' => $id,
+                ];
+            } else {
+                $arr = [
+                    'HTTP Code' => '200',
+                    'message' => 'Bill not change ',
+                    'client' => $id,
+                ];
+            }
+
         } else {
             $arr = [
                 'HTTP Code' => '200',
@@ -565,6 +575,94 @@ class BillController extends Controller
             ];
         }
         return response()->json($arr, 200);
+
+    }
+
+    public function getByMoth(Request $request)
+    {
+        $bill = Bill::query()->where('status', 2)->get();
+        if (!empty($bill)) {
+            if ($request->by == 'm') {
+                $da = date("Y-m-d", now()->timestamp);
+                $date = Carbon::parse($da)->timestamp;
+                $da = [];
+                foreach ($bill as $as) {
+                    $to = $as->day_out;
+
+                    if ($date - $to < 2592000) {
+                        $da[] = $as->total_money;
+
+                    }
+
+                }
+                $total = array_sum($da);
+
+                $arr = [
+                    'HTTP Code' => '200',
+                    'message' => 'Total money 30day',
+                    'data' => $total,
+                ];
+            }
+                if ($request->by == 'd') {
+                    if (!empty($bill)) {
+                        $da = date("Y-m-d", now()->timestamp);
+                        $date = Carbon::parse($da)->timestamp;
+                        $da = [];
+                        foreach ($bill as $as) {
+                            $to = $as->day_out;
+
+                            if ($date - $to < 604800) {
+                                $da[] = $as->total_money;
+
+                            }
+
+                        }
+                        $total = array_sum($da);
+
+                        $arr = [
+                            'HTTP Code' => '200',
+                            'message' => 'Total money 7day',
+                            'data' => $total,
+                        ];
+                    }
+                }
+
+                if ($request->by == 'h') {
+
+                    if (!empty($bill)) {
+                        $da = date("Y-m-d", now()->timestamp);
+                        $date = Carbon::parse($da)->timestamp;
+                        $da = [];
+                        foreach ($bill as $as) {
+                            $to = $as->day_out;
+
+                            if ($date - $to < 604800) {
+                                $da[] = $as->total_money;
+
+                            }
+
+                        }
+                        $total = array_sum($da);
+
+                        $arr = [
+                            'HTTP Code' => '200',
+                            'message' => 'Total money 1day',
+                            'data' => $total,
+                        ];
+                    }
+
+                }
+        } else {
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Not money',
+                'data' => [],
+            ];
+        }
+
+        return response()->json($arr, 201);
+    }
+    public  function  getbyRoom(Request  $request){
 
     }
 }

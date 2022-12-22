@@ -196,15 +196,23 @@ class RoomController extends Controller
         $user = Room::query()->where('id', $id)->first();
 
         if (!empty($user)) {
-            $status = $user->status === 1 ? 0 : 1;
-            Room::where('id', $id)->update(
-                ['status' => $status]
-            );
-            $arr = [
-                'HTTP Code' => '200',
-                'message' => 'Room status change successful ',
-                'client' => $id,
-            ];
+         if ($user->status=1||$user->status=0){
+             $status = $user->status == 1 ? 0 : 1;
+             Room::where('id', $id)->update(
+                 ['status' => $status]
+             );
+             $arr = [
+                 'HTTP Code' => '200',
+                 'message' => 'Room status change successful ',
+                 'client' => $id,
+             ];
+         }else{
+             $arr = [
+                 'HTTP Code' => '200',
+                 'message' => 'Room not change ',
+                 'client' => $id,
+             ];
+         }
         } else {
             $arr = [
                 'HTTP Code' => '200',

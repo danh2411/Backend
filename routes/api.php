@@ -88,7 +88,9 @@ Route::middleware(['cors', 'role:personnel'])->group(function ($router) {
     Route::post('/bill/addservice', [BillController::class, 'addservice']);
     Route::post('/bill/deletesevice', [BillController::class, 'deletesevice']);
     Route::get('/bill/clientroom/id={id}', [BillController::class, 'clientroom']);
-    Route::get('/bill/priceroom/id={id}', [BillController::class, 'roomprice ']);
+    Route::get('/bill/priceroom/id={id}', [BillController::class, 'roomprice']);
+// get theo 30d 7d 1d  pagram by=m or by=d by=h
+    Route::post('/bill/getByMoth', [BillController::class, 'getByMoth']);
 
 
 });
