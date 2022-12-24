@@ -235,9 +235,9 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
 
             'name' => 'required|string',
-            'phone' => 'required|string|min:10|max:11',
+            'phone' => 'required|string|min:10|max:11|unique:accounts,phone,' . $id,
             'address' => 'required|string',
-            'CCCD' => 'required|string|max:13',
+            'CCCD' => 'required|string|max:13|unique:accounts,CCCD,' . $id,
             'role' => 'required|numeric',
 
         ]);
@@ -288,19 +288,19 @@ class AuthController extends Controller
     }
 
     public function updateProflie(Request $request)
-    {
+    {    $id = Auth::user()->id;
         $validator = Validator::make($request->all(), [
 
             'name' => 'required|string',
-            'phone' => 'required|string|min:10|max:11',
+            'phone' => 'required|string|min:10|max:11|unique:accounts,phone,' . $id,
             'address' => 'required|string',
-            'CCCD' => 'required|string|max:13',
+            'CCCD' => 'required|string|max:13|unique:accounts,CCCD,' . $id,
 
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-        $id = Auth::user()->id;
+
 
 
         Account::query()->where('id', $id)->update([

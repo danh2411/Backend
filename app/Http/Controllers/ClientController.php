@@ -23,8 +23,8 @@ class ClientController extends Controller
             'firtname' => 'required|string|between:2,100',
             'lastname' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:clients',
-            'phone' => 'required|string|min:10',
-            'CCCD' => 'required|string|max:13',
+            'phone' => 'required|string|min:10|unique:clients',
+            'CCCD' => 'required|string|max:13|unique:clients',
         ]);
 
         if ($validator->fails()) {
@@ -48,8 +48,8 @@ class ClientController extends Controller
                 'firtname' => 'required|string',
                 'lastname' => 'required|string',
                 'email' => 'required|string|email|max:100|unique:clients,email,' . $id,
-                'phone' => 'required|string|min:10',
-                'CCCD' => 'required|string|max:13',
+                'phone' => 'required|string|min:10|unique:clients,phone,' . $id,
+                'CCCD' => 'required|string|max:13|unique:clients,CCCD,' . $id,
             ]);
 
             if ($validator->fails()) {

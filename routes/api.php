@@ -92,6 +92,6 @@ Route::middleware(['cors', 'role:personnel'])->group(function ($router) {
 // get theo 30d 7d 1d  pagram by=m or by=d by=h
     Route::post('/bill/getByMoth', [BillController::class, 'getByMoth']);
 
-
+    Route::post('/notifi/send', [\App\Http\Controllers\SendNotification::class, 'store']);
 });
 
