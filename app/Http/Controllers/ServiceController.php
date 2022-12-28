@@ -99,7 +99,23 @@ class ServiceController extends Controller
         return response()->json($arr, 201);
     }
 
-
+public  function getService(Request $request){
+        $ser=Services::query()->where('status',1)->get();
+        if (!empty($ser)){
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Not found ',
+                'data' => $ser,
+            ];
+        }else{
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Not found ',
+                'data' => $ser,
+            ];
+        }
+    return response()->json($arr, 201);
+}
     //serviceInfo
     public function serviceInfo(Request $request)
     {

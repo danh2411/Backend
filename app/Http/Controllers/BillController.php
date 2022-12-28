@@ -456,6 +456,12 @@ class BillController extends Controller
 
         if (!empty($bill)) {
             $service = Booked::query()->where('bill_id', $bill->id)->get();
+
+            foreach ($service as $se){
+                $ad[]=Services::query()->where('id',$se['services_id'])->first();
+
+            }
+
             $room = Room::query()->where('id', $bill->room_id)->first();
             $arr = [
                 'HTTP Code' => '200',
@@ -463,6 +469,7 @@ class BillController extends Controller
                 'bill' => $bill,
                 'service' => $service,
                 'room' => $room,
+                'book'=>$ad
             ];
         } else {
             $arr = [
@@ -499,7 +506,8 @@ class BillController extends Controller
                         'bill_id' => $bill->id],
                 ));
                 $price = $ser->price * $request->amount + $bill->total_service_fee;
-                Bill::query()->where('id', $request->bill)->update(['total_service_fee' => $price]);
+                $total=$price+$bill->total_money-$bill->total_service_fee;
+                Bill::query()->where('id', $request->bill)->update(['total_service_fee' => $price,'total_money'=>$total]);
                 $bill = Bill::query()->where([['id', $request->bill], ['status', 1]])->first();
 
                 $arr = [
@@ -636,7 +644,7 @@ class BillController extends Controller
                         foreach ($bill as $as) {
                             $to = $as->day_out;
 
-                            if ($date - $to < 604800) {
+                            if ($date - $to < 86400) {
                                 $da[] = $as->total_money;
 
                             }

@@ -102,7 +102,23 @@ class ClientController extends Controller
 
         return response()->json($arr, 201);
     }
-
+    public  function getClient(Request $request){
+        $ser=Client::query()->where('status',1)->get();
+        if (!empty($ser)){
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Not found ',
+                'data' => $ser,
+            ];
+        }else{
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Not found ',
+                'data' => $ser,
+            ];
+        }
+        return response()->json($arr, 201);
+    }
     public function clientProfile(Request $request)
     {
         $validator = Validator::make($request->all(), [

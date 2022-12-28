@@ -41,6 +41,7 @@ Route::middleware(['cors', 'role:personnel'])->group(function ($router) {
     Route::post('/client/edit/id={id}', [ClientController::class, 'edit']);
     Route::post('/client/hiden/id={id}', [ClientController::class, 'hiden']);
     Route::get('/client/client-profile', [ClientController::class, 'clientProfile']);
+    Route::get('/client/getclient', [ClientController::class, 'getClient']);
 });
 
 //services
@@ -49,6 +50,7 @@ Route::middleware(['cors', 'role:personnel'])->group(function ($router) {
     Route::post('/service/edit/id={id}', [ServiceController::class, 'edit']);
     Route::post('/service/hiden/id={id}', [ServiceController::class, 'hiden']);
     Route::get('/service/service-info', [ServiceController::class, 'serviceInfo']);
+    Route::get('/service/getservice', [ServiceController::class, 'getService']);
 
 });
 
