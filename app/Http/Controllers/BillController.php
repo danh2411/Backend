@@ -62,11 +62,15 @@ class BillController extends Controller
         $services = $request->service_id;
         $sl = $request->amount;
 
-        $books[] = Services::query()->where('id', $services)->first();
-
-        foreach ($books as $book) {
-            $dat[] = $book->price;
+        $books = Services::query()->where('id', $services)->first();
+        $dat[] = 0;
+        if (!empty($books)) {
+            foreach ($books as $book) {
+                $dat[] = $book->price;
+            }
         }
+
+
         $price_service = array_sum($dat) * $sl;
         $room = Room::query()->find($request->room_id);
 
@@ -457,8 +461,8 @@ class BillController extends Controller
         if (!empty($bill)) {
             $service = Booked::query()->where('bill_id', $bill->id)->get();
 
-            foreach ($service as $se){
-                $ad[]=Services::query()->where('id',$se['services_id'])->first();
+            foreach ($service as $se) {
+                $ad[] = Services::query()->where('id', $se['services_id'])->first();
 
             }
 
@@ -469,7 +473,7 @@ class BillController extends Controller
                 'bill' => $bill,
                 'service' => $service,
                 'room' => $room,
-                'book'=>$ad
+                'book' => $ad
             ];
         } else {
             $arr = [
@@ -506,8 +510,8 @@ class BillController extends Controller
                         'bill_id' => $bill->id],
                 ));
                 $price = $ser->price * $request->amount + $bill->total_service_fee;
-                $total=$price+$bill->total_money-$bill->total_service_fee;
-                Bill::query()->where('id', $request->bill)->update(['total_service_fee' => $price,'total_money'=>$total]);
+                $total = $price + $bill->total_money - $bill->total_service_fee;
+                Bill::query()->where('id', $request->bill)->update(['total_service_fee' => $price, 'total_money' => $total]);
                 $bill = Bill::query()->where([['id', $request->bill], ['status', 1]])->first();
 
                 $arr = [
@@ -611,55 +615,55 @@ class BillController extends Controller
                     'data' => $total,
                 ];
             }
-                if ($request->by == 'd') {
-                    if (!empty($bill)) {
-                        $da = date("Y-m-d", now()->timestamp);
-                        $date = Carbon::parse($da)->timestamp;
-                        $da = [];
-                        foreach ($bill as $as) {
-                            $to = $as->day_out;
+            if ($request->by == 'd') {
+                if (!empty($bill)) {
+                    $da = date("Y-m-d", now()->timestamp);
+                    $date = Carbon::parse($da)->timestamp;
+                    $da = [];
+                    foreach ($bill as $as) {
+                        $to = $as->day_out;
 
-                            if ($date - $to < 604800) {
-                                $da[] = $as->total_money;
-
-                            }
+                        if ($date - $to < 604800) {
+                            $da[] = $as->total_money;
 
                         }
-                        $total = array_sum($da);
 
-                        $arr = [
-                            'HTTP Code' => '200',
-                            'message' => 'Total money 7day',
-                            'data' => $total,
-                        ];
                     }
+                    $total = array_sum($da);
+
+                    $arr = [
+                        'HTTP Code' => '200',
+                        'message' => 'Total money 7day',
+                        'data' => $total,
+                    ];
                 }
+            }
 
-                if ($request->by == 'h') {
+            if ($request->by == 'h') {
 
-                    if (!empty($bill)) {
-                        $da = date("Y-m-d", now()->timestamp);
-                        $date = Carbon::parse($da)->timestamp;
-                        $da = [];
-                        foreach ($bill as $as) {
-                            $to = $as->day_out;
+                if (!empty($bill)) {
+                    $da = date("Y-m-d", now()->timestamp);
+                    $date = Carbon::parse($da)->timestamp;
+                    $da = [];
+                    foreach ($bill as $as) {
+                        $to = $as->day_out;
 
-                            if ($date - $to < 86400) {
-                                $da[] = $as->total_money;
-
-                            }
+                        if ($date - $to < 86400) {
+                            $da[] = $as->total_money;
 
                         }
-                        $total = array_sum($da);
 
-                        $arr = [
-                            'HTTP Code' => '200',
-                            'message' => 'Total money 1day',
-                            'data' => $total,
-                        ];
                     }
+                    $total = array_sum($da);
 
+                    $arr = [
+                        'HTTP Code' => '200',
+                        'message' => 'Total money 1day',
+                        'data' => $total,
+                    ];
                 }
+
+            }
         } else {
             $arr = [
                 'HTTP Code' => '200',
@@ -670,7 +674,9 @@ class BillController extends Controller
 
         return response()->json($arr, 201);
     }
-    public  function  getbyRoom(Request  $request){
+
+    public function getbyRoom(Request $request)
+    {
 
     }
 }
