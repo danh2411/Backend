@@ -10,9 +10,8 @@
 
 <body>
 
-<h1>{{ $details['title'] }}</h1>
+<h3>{{ $details['title'] }}</h3>
 
-<p>Your code is : {{ $details['code'] }}</p>
 
 
 

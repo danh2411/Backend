@@ -92,9 +92,9 @@ class Account extends Authenticatable implements JWTSubject,MustVerifyEmail
 
             $details = [
 
-                'title' => 'Mail from ItSolutionStuff.com',
+                'title' => 'Tuyệt đối không chia sẽ mã này cho người khác. Mã xác nhận của bạn là: '. $code,
 
-                'code' => $code
+
 
             ];
 

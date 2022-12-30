@@ -360,10 +360,11 @@ class BillController extends Controller
     public function billroom($id)
     {
 
-        $bill = Bill::query()->where('room_id', $id)->where('status', 1)->first();
+        $bill = Bill::query()->where('id', $id)->where('status', 1)->first();
+
         if (!empty($bill)) {
             $ser = Booked::query()->where('bill_id', $bill->id)->get();
-            $rooom = Room::query()->where('id', $bill->room_id);
+            $rooom = Room::query()->where('id', $bill->room_id)->get();
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Bill info',

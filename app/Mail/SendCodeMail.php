@@ -62,7 +62,7 @@ class SendCodeMail extends Mailable
 
     {
 
-        return $this->subject('Mail from ItSolutionStuff.com')
+        return $this->subject('Xác thực tài khoản')
 
             ->view('emails.code');
 
