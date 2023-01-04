@@ -360,7 +360,7 @@ class BillController extends Controller
     public function billroom($id)
     {
 
-        $bill = Bill::query()->where('id', $id)->where('status', 1)->first();
+        $bill = Bill::query()->where('room_id', $id)->where('status', 1)->first();
 
         if (!empty($bill)) {
             $ser = Booked::query()->where('bill_id', $bill->id)->get();
@@ -462,19 +462,27 @@ class BillController extends Controller
         if (!empty($bill)) {
             $service = Booked::query()->where('bill_id', $bill->id)->get();
 
-            foreach ($service as $se) {
-                $ad[] = Services::query()->where('id', $se['services_id'])->first();
+            $ad = [];
+            if (!empty($service)) {
+                foreach ($service as $key => $item) {
+
+                    $list[$key]['amount'] = $item['amount'];
+                }
+                foreach ($service as $key => $se) {
+                    $ad = Services::query()->where('id', $se['services_id'])->first();
+                    $list[$key]['price'] = $ad['price']*$list[$key]['amount'];
+                    $list[$key]['name'] = $ad['name'];
+                }
 
             }
 
-            $room = Room::query()->where('id', $bill->room_id)->first();
+             Room::query()->where('id', $bill->room_id)->first();
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Bill info',
                 'bill' => $bill,
-                'service' => $service,
-                'room' => $room,
-                'book' => $ad
+                'service' => $list,
+
             ];
         } else {
             $arr = [
