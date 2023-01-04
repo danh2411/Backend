@@ -63,11 +63,14 @@ class BillController extends Controller
         $sl = $request->amount;
 
         $books = Services::query()->where('id', $services)->first();
+
         $dat[] = 0;
         if (!empty($books)) {
-            foreach ($books as $book) {
-                $dat[] = $book->price;
-            }
+            $dat[]  = $books->price;
+
+            // foreach ($books as $book) {
+            //     $dat[] = $book->price;
+            // }
         }
 
 
@@ -459,14 +462,17 @@ class BillController extends Controller
 
         $bill = Bill::query()->where('room_id', $id)->where('status', 1)->first();
 
+
         if (!empty($bill)) {
             $service = Booked::query()->where('bill_id', $bill->id)->get();
+            $list = [];
 
             $ad = [];
             if (!empty($service)) {
                 foreach ($service as $key => $item) {
 
                     $list[$key]['amount'] = $item['amount'];
+                    $list[$key]['id'] = $item['id'];
                 }
                 foreach ($service as $key => $se) {
                     $ad = Services::query()->where('id', $se['services_id'])->first();
@@ -476,7 +482,7 @@ class BillController extends Controller
 
             }
 
-             Room::query()->where('id', $bill->room_id)->first();
+            Room::query()->where('id', $bill->room_id)->first();
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Bill info',
