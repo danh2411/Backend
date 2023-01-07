@@ -151,33 +151,33 @@ class ClientController extends Controller
         return response()->json($arr, 201);
     }
  public  function  searchClient(Request  $request){
-     $validator = Validator::make($request->all(), [
-         'key' => 'required',
-     ]);
 
-     if ($validator->fails()) {
-         return response()->json($validator->errors()->toJson(), 400);
-     }
+   if (!empty($request->key)){
+       if (is_numeric($request->key)){
+           $client=null;
 
-     if (is_numeric($request->key)){
-         $client=null;
+           if (strlen($request->key)==13){
+               $client=Client::query()->where('CCCD',$request->key)->first();
+           }elseif(strlen($request->key)==10){
+               $client=Client::query()->where('phone',$request->key)->first();
+           }else{
+               $arr['message']='Không tìm thấy khách hàng. Hãy nhập SDT hoặc CCCD để tìm';
+           }
+           $arr['HTTP Code'] = '200';
+           $arr['data'] = $client;
+           return response()->json($arr, 201);
 
-         if (strlen($request->key)==13){
-             $client=Client::query()->where('CCCD',$request->key)->first();
-         }elseif(strlen($request->key)==10){
-             $client=Client::query()->where('phone',$request->key)->first();
-         }else{
-             $arr['message']='Không tìm thấy khách hàng. Hãy nhập SDT hoặc CCCD để tìm';
-         }
-         $arr['HTTP Code'] = '200';
-         $arr['data'] = $client;
-         return response()->json($arr, 201);
-
-     }else{
-         $arr['message']=' Hãy nhập SDT hoặc CCCD để tìm';
-         $arr['HTTP Code'] = '200';
-         $arr['data'] = null;
-         return response()->json($arr, 201);
-     }
+       }else{
+           $arr['message']=' Hãy nhập SDT hoặc CCCD để tìm';
+           $arr['HTTP Code'] = '200';
+           $arr['data'] = null;
+           return response()->json($arr, 201);
+       }
+   }else{
+       $client=Client::all()??null;
+       $arr['HTTP Code'] = '200';
+       $arr['data'] = $client;
+       return response()->json($arr, 201);
+   }
  }
 }

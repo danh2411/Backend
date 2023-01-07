@@ -432,7 +432,7 @@ class RoomController extends Controller
          }
          $arr['HTTP Code'] = '200';
      }else{
-         $ser=Room::all();
+         $ser=Room::all()??null;
          $arr['HTTP Code'] = '200';
          $arr['data'] = $ser;
      }

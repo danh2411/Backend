@@ -178,7 +178,7 @@ public  function getService(Request $request){
                 $arr['data'] = null;
             }
         }else{
-            $ser=Services::all();
+            $ser=Services::all()??null;
             $arr['data'] = $ser;
         }
 
