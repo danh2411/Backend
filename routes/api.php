@@ -42,6 +42,7 @@ Route::middleware(['cors', 'role:personnel'])->group(function ($router) {
     Route::post('/client/hiden/id={id}', [ClientController::class, 'hiden']);
     Route::get('/client/client-profile', [ClientController::class, 'clientProfile']);
     Route::get('/client/getclient', [ClientController::class, 'getClient']);
+    Route::get('/client/search', [ClientController::class, 'searchClient']);
 });
 
 //services
