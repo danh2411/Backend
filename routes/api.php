@@ -95,5 +95,7 @@ Route::middleware(['cors', 'role:personnel'])->group(function ($router) {
     Route::post('/bill/getByMoth', [BillController::class, 'getByMoth']);
 
     Route::post('/notifi/send', [\App\Http\Controllers\SendNotification::class, 'store']);
+    Route::get('/bill/billall', [BillController::class, 'listBill']);
+    Route::get('/bill/viewbill/id={id}', [BillController::class, 'viewBill']);
 });
 

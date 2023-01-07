@@ -66,7 +66,7 @@ class BillController extends Controller
 
         $dat[] = 0;
         if (!empty($books)) {
-            $dat[]  = $books->price;
+            $dat[] = $books->price;
 
             // foreach ($books as $book) {
             //     $dat[] = $book->price;
@@ -476,7 +476,7 @@ class BillController extends Controller
                 }
                 foreach ($service as $key => $se) {
                     $ad = Services::query()->where('id', $se['services_id'])->first();
-                    $list[$key]['price'] = $ad['price']*$list[$key]['amount'];
+                    $list[$key]['price'] = $ad['price'] * $list[$key]['amount'];
                     $list[$key]['name'] = $ad['name'];
                 }
 
@@ -525,9 +525,9 @@ class BillController extends Controller
                         'bill_id' => $bill->id],
                 ));
                 $price = $ser->price * $request->amount + $bill->total_service_fee;
-               
+
                 $total = $price + $bill->total_money - $bill->total_service_fee;
-            
+
                 Bill::query()->where('id', $request->bill)->update(['total_service_fee' => $price, 'total_money' => $total]);
                 $bill = Bill::query()->where([['id', $request->bill], ['status', 1]])->first();
 
@@ -567,23 +567,23 @@ class BillController extends Controller
             return response()->json($validator->errors()->toJson(), 400);
         }
         $bill = Bill::query()->where([['id', $request->bill], ['status', 1]])->first();
-        $check= Booked::query()->where([['bill_id', $request->bill], ['id', $request->service]])->first();
+        $check = Booked::query()->where([['bill_id', $request->bill], ['id', $request->service]])->first();
 
-        if (!empty($bill)&&!empty($check)) {
-      
-          
-            $as= Services::query()->where( 'id', $check->services_id)->first();
-          
-           $total=$bill->total_money-$as->price;
-           $se=$bill->total_service_fee-$as->price;
-          
-           Bill::query()->where([['id', $request->bill], ['status', 1]])->update([
-            'total_service_fee'=>$se,
-            'total_money'=>$total,
-           ]);
-           Booked::query()->where([['bill_id', $request->bill], ['id', $request->service]])->delete();
+        if (!empty($bill) && !empty($check)) {
 
-           $arr = [
+
+            $as = Services::query()->where('id', $check->services_id)->first();
+
+            $total = $bill->total_money - $as->price;
+            $se = $bill->total_service_fee - $as->price;
+
+            Bill::query()->where([['id', $request->bill], ['status', 1]])->update([
+                'total_service_fee' => $se,
+                'total_money' => $total,
+            ]);
+            Booked::query()->where([['bill_id', $request->bill], ['id', $request->service]])->delete();
+
+            $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Done',
 
@@ -707,8 +707,73 @@ class BillController extends Controller
         return response()->json($arr, 201);
     }
 
-    public function getbyRoom(Request $request)
+    public function listBill(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|numeric|min:0',
 
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+        $bill = Bill::query()->get();
+        if (!empty($bill)) {
+
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Bill',
+                'data' => $bill,
+            ];
+        } else {
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Bill not found',
+                'data' => [],
+            ];
+        }
+        return response()->json($arr, 200);
+    }
+
+    public function viewBill(Request $request)
+    {   if (!empty($bill)) {
+        $bill = Bill::query()->find($request->id);
+        $room = Room::query()->find($bill->room_id);
+        $client = Client::query()->find($bill->client_id);
+        $ab = Account::query()->find($bill->account_id );
+        $ser = Booked::query()->where('bill_id', $bill->id)->get();;
+        foreach ($ser as $key => $item) {
+            $list[$key]['id'] = $item['id'];
+            $list[$key]['amount'] = $item['amount'];
+
+        }
+        foreach ($ser as $key => $se) {
+            $ad = Services::query()->where('id', $se['services_id'])->first();
+            $list[$key]['price'] = $ad['price'] * $list[$key]['amount'];
+            $list[$key]['name'] = $ad['name'];
+        }
+
+        $bi['id'] = $bill->id;
+        $bi['name_room'] = $room->name_room;
+        $bi['name'] = $ab->name;
+        $bi['firtname'] = $client->firtname;
+        $bi['lastname'] = $client->lastname;
+        $bi['phone'] = $client->phone;
+        $bi['CCCD'] = $client->CCCD;
+        $bi['service']=$list;
+
+
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Bill',
+                'data' => $bi,
+            ];
+        } else {
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Bill not found',
+                'data' => [],
+            ];
+        }
+        return response()->json($arr, 200);
     }
 }
