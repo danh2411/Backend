@@ -730,15 +730,10 @@ class BillController extends Controller
 
     public function viewBill(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|numeric|min:0',
 
-        ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+        $bill = Bill::query()->find($request->id);
         if (!empty($bill)) {
-            $bill = Bill::query()->find($request->id);
+
             $room = Room::query()->find($bill->room_id);
             $client = Client::query()->find($bill->client_id);
             $ab = Account::query()->find($bill->account_id);
@@ -762,7 +757,9 @@ class BillController extends Controller
             $bi['phone'] = $client->phone;
             $bi['CCCD'] = $client->CCCD;
             $bi['service'] = $list;
-
+            $bi['total_room_rate '] = $bill-> total_room_rate ;
+            $bi['total_service_fee '] = $bill-> total_service_fee ;
+            $bi['total_money '] = $bill-> total_money ;
 
             $arr = [
                 'HTTP Code' => '200',
