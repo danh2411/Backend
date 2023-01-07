@@ -35,6 +35,8 @@ Route::middleware(['cors'])->group(function ($router) {
     Route::post('/update-profile', [AuthController::class, 'updateProflie']);
     Route::post('/changepass', [AuthController::class, 'changePassWord']);
     Route::post('/hiden/id={id}', [AuthController::class, 'hiden'])->middleware('role:admin');
+    Route::post('/search', [AuthController::class, 'searchAccount'])->middleware('role:admin');
+
 });
 Route::middleware(['cors', 'role:personnel'])->group(function ($router) {
     Route::post('/client/create', [ClientController::class, 'create']);
@@ -52,6 +54,8 @@ Route::middleware(['cors', 'role:personnel'])->group(function ($router) {
     Route::post('/service/hiden/id={id}', [ServiceController::class, 'hiden']);
     Route::get('/service/service-info', [ServiceController::class, 'serviceInfo']);
     Route::get('/service/getservice', [ServiceController::class, 'getService']);
+    Route::get('/service/search', [ServiceController::class, 'searchService']);
+
 
 });
 
