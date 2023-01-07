@@ -737,17 +737,21 @@ class BillController extends Controller
             $room = Room::query()->find($bill->room_id);
             $client = Client::query()->find($bill->client_id);
             $ab = Account::query()->find($bill->account_id);
-            $ser = Booked::query()->where('bill_id', $bill->id)->get();;
-            foreach ($ser as $key => $item) {
-                $list[$key]['id'] = $item['id'];
-                $list[$key]['amount'] = $item['amount'];
+            $ser = Booked::query()->where('bill_id', $bill->id)->get();
+            $list=null;
+            if(!empty($ser)){
+                foreach ($ser as $key => $item) {
+                    $list[$key]['id'] = $item['id'];
+                    $list[$key]['amount'] = $item['amount'];
 
+                }
+                foreach ($ser as $key => $se) {
+                    $ad = Services::query()->where('id', $se['services_id'])->first();
+                    $list[$key]['price'] = $ad['price'] * $list[$key]['amount'];
+                    $list[$key]['name'] = $ad['name'];
+                }
             }
-            foreach ($ser as $key => $se) {
-                $ad = Services::query()->where('id', $se['services_id'])->first();
-                $list[$key]['price'] = $ad['price'] * $list[$key]['amount'];
-                $list[$key]['name'] = $ad['name'];
-            }
+
 
             $bi['id'] = $bill->id;
             $bi['name_room'] = $room->name_room;
@@ -756,7 +760,7 @@ class BillController extends Controller
             $bi['lastname'] = $client->lastname;
             $bi['phone'] = $client->phone;
             $bi['CCCD'] = $client->CCCD;
-            $bi['service'] = $list;
+            $bi['service'] = $list??null;
             $bi['total_room_rate '] = $bill-> total_room_rate ;
             $bi['total_service_fee '] = $bill-> total_service_fee ;
             $bi['total_money '] = $bill-> total_money ;
