@@ -738,7 +738,7 @@ class BillController extends Controller
             $client = Client::query()->find($bill->client_id);
             $ab = Account::query()->find($bill->account_id);
             $ser = Booked::query()->where('bill_id', $bill->id)->get();
-            $list=null;
+            $list=[];
             if(!empty($ser)){
                 foreach ($ser as $key => $item) {
                     $list[$key]['id'] = $item['id'];
