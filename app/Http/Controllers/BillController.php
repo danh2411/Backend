@@ -525,13 +525,15 @@ class BillController extends Controller
                         'bill_id' => $bill->id],
                 ));
                 $price = $ser->price * $request->amount + $bill->total_service_fee;
+               
                 $total = $price + $bill->total_money - $bill->total_service_fee;
+            
                 Bill::query()->where('id', $request->bill)->update(['total_service_fee' => $price, 'total_money' => $total]);
                 $bill = Bill::query()->where([['id', $request->bill], ['status', 1]])->first();
 
                 $arr = [
                     'HTTP Code' => '200',
-                    'message' => 'Service not found',
+                    'message' => 'Service ',
                     'bill' => $bill,
                 ];
             } else {
@@ -564,9 +566,24 @@ class BillController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-        if (!empty($bill)) {
-            Booked::query()->where([['bill_id', $request->bill], ['services_id', $request->service]])->delete();
-            $arr = [
+        $bill = Bill::query()->where([['id', $request->bill], ['status', 1]])->first();
+        $check= Booked::query()->where([['bill_id', $request->bill], ['id', $request->service]])->first();
+
+        if (!empty($bill)&&!empty($check)) {
+      
+          
+            $as= Services::query()->where( 'id', $check->services_id)->first();
+          
+           $total=$bill->total_money-$as->price;
+           $se=$bill->total_service_fee-$as->price;
+          
+           Bill::query()->where([['id', $request->bill], ['status', 1]])->update([
+            'total_service_fee'=>$se,
+            'total_money'=>$total,
+           ]);
+           Booked::query()->where([['bill_id', $request->bill], ['id', $request->service]])->delete();
+
+           $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Done',
 

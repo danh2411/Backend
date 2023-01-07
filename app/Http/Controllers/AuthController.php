@@ -234,9 +234,9 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
 
-            'name' => 'required|string',
+            'name' => 'required|string|not_regex:/^.+@.+$/i',
             'phone' => 'required|string|min:10|max:11|unique:accounts,phone,' . $id,
-            'address' => 'required|string',
+            'address' => 'required|string|not_regex:/^.+@.+$/i',
             'CCCD' => 'required|string|max:13|unique:accounts,CCCD,' . $id,
             'role' => 'required|numeric',
 
@@ -291,9 +291,9 @@ class AuthController extends Controller
     {    $id = Auth::user()->id;
         $validator = Validator::make($request->all(), [
 
-            'name' => 'required|string',
+            'name' => 'required|string|not_regex:/^.+@.+$/i',
             'phone' => 'required|string|min:10|max:11|unique:accounts,phone,' . $id,
-            'address' => 'required|string',
+            'address' => 'required|string|not_regex:/^.+@.+$/i',
             'CCCD' => 'required|string|max:13|unique:accounts,CCCD,' . $id,
 
         ]);

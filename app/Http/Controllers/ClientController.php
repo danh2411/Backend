@@ -20,8 +20,8 @@ class ClientController extends Controller
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'firtname' => 'required|string|between:2,100',
-            'lastname' => 'required|string|between:2,100',
+            'firtname' => 'required|string|between:2,100|not_regex:/^.+@.+$/i',
+            'lastname' => 'required|string|between:2,100|not_regex:/^.+@.+$/i',
             'email' => 'required|string|email|max:100|unique:clients',
             'phone' => 'required|string|min:10|unique:clients',
             'CCCD' => 'required|string|max:13|unique:clients',
@@ -45,8 +45,8 @@ class ClientController extends Controller
         $client = Client::query()->find($id);
         if (!empty($client)) {
             $validator = Validator::make($request->all(), [
-                'firtname' => 'required|string',
-                'lastname' => 'required|string',
+                'firtname' => 'required|string|not_regex:/^.+@.+$/i',
+                'lastname' => 'required|string|not_regex:/^.+@.+$/i',
                 'email' => 'required|string|email|max:100|unique:clients,email,' . $id,
                 'phone' => 'required|string|min:10|unique:clients,phone,' . $id,
                 'CCCD' => 'required|string|max:13|unique:clients,CCCD,' . $id,
@@ -103,7 +103,7 @@ class ClientController extends Controller
         return response()->json($arr, 201);
     }
     public  function getClient(Request $request){
-        $ser=Client::query()->where('status',1)->get();
+        $ser=Client::query()->get();
         if (!empty($ser)){
             $arr = [
                 'HTTP Code' => '200',
@@ -119,6 +119,7 @@ class ClientController extends Controller
         }
         return response()->json($arr, 201);
     }
+  
     public function clientProfile(Request $request)
     {
         $validator = Validator::make($request->all(), [

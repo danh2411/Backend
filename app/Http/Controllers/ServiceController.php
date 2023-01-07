@@ -18,7 +18,7 @@ class ServiceController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'name' => 'required|string|unique:services',
+            'name' => 'required|string|not_regex:/^.+@.+$/i|unique:services',
             'price' => 'required|numeric|min:0'
         ]);
         if ($validator->fails()) {
@@ -39,9 +39,9 @@ class ServiceController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'name' => 'required|string|unique:services,name,' . $id,
+            'name' => 'required|string|not_regex:/^.+@.+$/i|unique:services,name,' . $id,
             'price' => 'required|numeric|min:0',
-            'description' => 'string',
+            
         ]);
 
         if ($validator->fails()) {
@@ -100,7 +100,7 @@ class ServiceController extends Controller
     }
 
 public  function getService(Request $request){
-        $ser=Services::query()->where('status',1)->get();
+        $ser=Services::query()->get();
         if (!empty($ser)){
             $arr = [
                 'HTTP Code' => '200',

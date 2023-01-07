@@ -107,9 +107,9 @@ class RoomController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'name_room' => 'required|string|unique:rooms,name_room',
-            'typ_room' => 'required',
-            'price' => 'required|numeric|min:0',
+            'name_room' => 'required|string|not_regex:/^.+@.+$/i|unique:rooms,name_room',
+            'typ_room' => 'required|not_regex:/^.+@.+$/i',
+            'price' => 'required|integer|min:100000',
             'capacity' => 'required|integer|min:1|max:20',
         ]);
         if ($validator->fails()) {
@@ -132,9 +132,9 @@ class RoomController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
 
-            'name_room' => 'required|string|unique:rooms,name_room,' . $id,
-            'typ_room' => 'required',
-            'price' => 'required|numeric|min:0',
+            'name_room' => 'required|string||not_regex:/^.+@.+$/i|unique:rooms,name_room,' . $id,
+            'typ_room' => 'required|not_regex:/^.+@.+$/i',
+            'price' => 'required|integer|min:100000',
             'capacity' => 'required|integer|min:1|max:20',
         ]);
 
@@ -192,15 +192,16 @@ class RoomController extends Controller
 
     //hiden
     public function hiden(Request $request, $id)
-    {
+    {  
         $user = Room::query()->where('id', $id)->first();
 
         if (!empty($user)) {
-         if ($user->status=1||$user->status=0){
+         if ($user->status==1||$user->status==0){
              $status = $user->status == 1 ? 0 : 1;
              Room::where('id', $id)->update(
                  ['status' => $status]
              );
+       
              $arr = [
                  'HTTP Code' => '200',
                  'message' => 'Room status change successful ',
@@ -376,10 +377,14 @@ class RoomController extends Controller
                 return response()->json($arr, 201);
             }
 
-            if ($request->status_room == 2 || $request->status_room = 3) {
+            if ($request->status_room == 2 || $request->status_room == 3) {
 
-                $rooms[] = Room::query()->where('status', $request->status_room)->get();
-
+                $room = Room::query()->where('status', $request->status_room)->first();
+                $bill=Bill::query()->where([['room_id', $room->id],['day_out'>time()]])->first();
+               $rooms=[
+                'name'=>$room->name,
+                'price'=>$bill->total_money,
+               ];
                 $arr = [
                     'HTTP Code' => '200',
                     'message' => 'Successful',
@@ -389,12 +394,24 @@ class RoomController extends Controller
 
 
         } else {
+            if($request->status_room==2){
+              
+            $rooms = Room::query()->where('status', $request->status_room)->get();
+
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Successful',
+                'Rom' => $rooms,
+            ];
+        }  if($request->status_room==3){
+                
             $rooms = Room::query()->where('status', $request->status_room)->get();
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Successful',
                 'Rom' => $rooms,
             ];
+        }
         }
 
 

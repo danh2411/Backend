@@ -58,7 +58,7 @@ Route::middleware(['cors', 'role:personnel'])->group(function ($router) {
 Route::middleware(['cors'])->group(function ($router) {
     Route::post('/room/add', [RoomController::class, 'create'])->middleware('role:admin');
     Route::post('/room/edit/id={id}', [RoomController::class, 'edit'])->middleware('role:admin');
-    Route::get('/room/hiden/id={id}', [RoomController::class, 'hiden'])->middleware('role:admin');
+    Route::get('/room/hiden/id={id}', [RoomController::class, 'hiden']);
     Route::get('/room/getlist', [RoomController::class, 'roomAll']);
     Route::get('/room/filter', [RoomController::class, 'filterStatus']);
     Route::get('/room/emptyroom', [RoomController::class, 'emptyroom'])->middleware('role:personnel');
