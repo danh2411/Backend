@@ -756,6 +756,7 @@ class BillController extends Controller
             $bi['id'] = $bill->id;
             $bi['name_room'] = $room->name_room;
             $bi['name'] = $ab->name;
+            $bi['email'] = $ab->email;
             $bi['firtname'] = $client->firtname;
             $bi['lastname'] = $client->lastname;
             $bi['phone'] = $client->phone;
