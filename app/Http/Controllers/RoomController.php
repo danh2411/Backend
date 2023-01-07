@@ -192,7 +192,7 @@ class RoomController extends Controller
 
     //hiden
     public function hiden(Request $request, $id)
-    {  
+    {
         $user = Room::query()->where('id', $id)->first();
 
         if (!empty($user)) {
@@ -201,7 +201,7 @@ class RoomController extends Controller
              Room::where('id', $id)->update(
                  ['status' => $status]
              );
-       
+
              $arr = [
                  'HTTP Code' => '200',
                  'message' => 'Room status change successful ',
@@ -395,7 +395,7 @@ class RoomController extends Controller
 
         } else {
             if($request->status_room==2){
-              
+
             $rooms = Room::query()->where('status', $request->status_room)->get();
 
             $arr = [
@@ -404,7 +404,7 @@ class RoomController extends Controller
                 'Rom' => $rooms,
             ];
         }  if($request->status_room==3){
-                
+
             $rooms = Room::query()->where('status', $request->status_room)->get();
             $arr = [
                 'HTTP Code' => '200',
@@ -418,5 +418,28 @@ class RoomController extends Controller
         return response()->json($arr, 201);
     }
 
+    public  function  searchRoom(Request $request){
+        $validator = Validator::make($request->all(), [
+            'key' => 'required',
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        $ser=Room::query()->where('name_room', 'like', "%$request->key%")
+            ->orWhere('price', $request->key)->
+            orwhere('description', 'like', "%$request->key%")->get();
+
+        if (!empty($ser)){
+            $arr['data'] = $ser;
+        }else{
+            $arr['message']='Không tìm thấy phòng';
+            $arr['data'] = null;
+        }
+        $arr['HTTP Code'] = '200';
+
+        return response()->json($arr, 201);
+
+    }
 }

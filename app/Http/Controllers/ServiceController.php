@@ -41,7 +41,7 @@ class ServiceController extends Controller
         $validator = Validator::make($input, [
             'name' => 'required|string|not_regex:/^.+@.+$/i|unique:services,name,' . $id,
             'price' => 'required|numeric|min:0',
-            
+
         ]);
 
         if ($validator->fails()) {
@@ -165,5 +165,28 @@ public  function getService(Request $request){
         $arr['data'] = $user;
 
         return response()->json($arr, 201);
+    }
+    public  function  searchService(Request $request){
+        $validator = Validator::make($request->all(), [
+            'key' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+            $ser=Services::query()->where('name', 'like', "%$request->key%")
+                ->orWhere('price', $request->key)->get();
+
+            if (!empty($ser)){
+                $arr['data'] = $ser;
+            }else{
+                $arr['message']='Không tìm thấy dịch vụ';
+                $arr['data'] = null;
+            }
+            $arr['HTTP Code'] = '200';
+
+            return response()->json($arr, 201);
+
     }
 }
