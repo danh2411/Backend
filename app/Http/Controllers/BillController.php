@@ -709,13 +709,7 @@ class BillController extends Controller
 
     public function listBill(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|numeric|min:0',
 
-        ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
         $bill = Bill::query()->get();
         if (!empty($bill)) {
 
@@ -735,31 +729,39 @@ class BillController extends Controller
     }
 
     public function viewBill(Request $request)
-    {   if (!empty($bill)) {
-        $bill = Bill::query()->find($request->id);
-        $room = Room::query()->find($bill->room_id);
-        $client = Client::query()->find($bill->client_id);
-        $ab = Account::query()->find($bill->account_id );
-        $ser = Booked::query()->where('bill_id', $bill->id)->get();;
-        foreach ($ser as $key => $item) {
-            $list[$key]['id'] = $item['id'];
-            $list[$key]['amount'] = $item['amount'];
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|numeric|min:0',
 
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
         }
-        foreach ($ser as $key => $se) {
-            $ad = Services::query()->where('id', $se['services_id'])->first();
-            $list[$key]['price'] = $ad['price'] * $list[$key]['amount'];
-            $list[$key]['name'] = $ad['name'];
-        }
+        if (!empty($bill)) {
+            $bill = Bill::query()->find($request->id);
+            $room = Room::query()->find($bill->room_id);
+            $client = Client::query()->find($bill->client_id);
+            $ab = Account::query()->find($bill->account_id);
+            $ser = Booked::query()->where('bill_id', $bill->id)->get();;
+            foreach ($ser as $key => $item) {
+                $list[$key]['id'] = $item['id'];
+                $list[$key]['amount'] = $item['amount'];
 
-        $bi['id'] = $bill->id;
-        $bi['name_room'] = $room->name_room;
-        $bi['name'] = $ab->name;
-        $bi['firtname'] = $client->firtname;
-        $bi['lastname'] = $client->lastname;
-        $bi['phone'] = $client->phone;
-        $bi['CCCD'] = $client->CCCD;
-        $bi['service']=$list;
+            }
+            foreach ($ser as $key => $se) {
+                $ad = Services::query()->where('id', $se['services_id'])->first();
+                $list[$key]['price'] = $ad['price'] * $list[$key]['amount'];
+                $list[$key]['name'] = $ad['name'];
+            }
+
+            $bi['id'] = $bill->id;
+            $bi['name_room'] = $room->name_room;
+            $bi['name'] = $ab->name;
+            $bi['firtname'] = $client->firtname;
+            $bi['lastname'] = $client->lastname;
+            $bi['phone'] = $client->phone;
+            $bi['CCCD'] = $client->CCCD;
+            $bi['service'] = $list;
 
 
             $arr = [
