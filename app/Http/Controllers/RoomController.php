@@ -419,25 +419,25 @@ class RoomController extends Controller
     }
 
     public  function  searchRoom(Request $request){
-        $validator = Validator::make($request->all(), [
-            'key' => 'required',
-        ]);
+     if (!empty($request->key)){
+         $ser=Room::query()->where('name_room', 'like', "%$request->key%")
+             ->orWhere('price', $request->key)->
+             orwhere('description', 'like', "%$request->key%")->get();
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+         if (!empty($ser)){
+             $arr['data'] = $ser;
+         }else{
+             $arr['message']='Không tìm thấy phòng';
+             $arr['data'] = null;
+         }
+         $arr['HTTP Code'] = '200';
+     }else{
+         $ser=Room::all();
+         $arr['HTTP Code'] = '200';
+         $arr['data'] = $ser;
+     }
 
-        $ser=Room::query()->where('name_room', 'like', "%$request->key%")
-            ->orWhere('price', $request->key)->
-            orwhere('description', 'like', "%$request->key%")->get();
 
-        if (!empty($ser)){
-            $arr['data'] = $ser;
-        }else{
-            $arr['message']='Không tìm thấy phòng';
-            $arr['data'] = null;
-        }
-        $arr['HTTP Code'] = '200';
 
         return response()->json($arr, 201);
 

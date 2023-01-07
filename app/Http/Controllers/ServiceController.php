@@ -167,14 +167,7 @@ public  function getService(Request $request){
         return response()->json($arr, 201);
     }
     public  function  searchService(Request $request){
-        $validator = Validator::make($request->all(), [
-            'key' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-
+        if (!empty($request->key)){
             $ser=Services::query()->where('name', 'like', "%$request->key%")
                 ->orWhere('price', $request->key)->get();
 
@@ -184,6 +177,12 @@ public  function getService(Request $request){
                 $arr['message']='Không tìm thấy dịch vụ';
                 $arr['data'] = null;
             }
+        }else{
+            $ser=Services::all();
+            $arr['data'] = $ser;
+        }
+
+
             $arr['HTTP Code'] = '200';
 
             return response()->json($arr, 201);
