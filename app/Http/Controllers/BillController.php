@@ -761,6 +761,8 @@ class BillController extends Controller
             $bi['lastname'] = $client->lastname;
             $bi['phone'] = $client->phone;
             $bi['CCCD'] = $client->CCCD;
+            $bi['price_room'] = $room->price;
+            $bi['amount'] = 1;
             $bi['service'] = $list;
             $bi['total_room_rate'] = $bill-> total_room_rate ;
             $bi['total_service_fee'] = $bill-> total_service_fee ;
