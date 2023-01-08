@@ -157,9 +157,9 @@ class ClientController extends Controller
            $client=null;
 
            if (strlen($request->key)==13){
-               $client=Client::query()->where('CCCD',$request->key)->first();
+               $client=Client::query()->where('CCCD',$request->key)->get();
            }elseif(strlen($request->key)==10){
-               $client=Client::query()->where('phone',$request->key)->first();
+               $client=Client::query()->where('phone',$request->key)->get();
            }else{
                $arr['message']='Không tìm thấy khách hàng. Hãy nhập SDT hoặc CCCD để tìm';
            }
