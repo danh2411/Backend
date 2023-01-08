@@ -22,67 +22,68 @@ use App\Http\Controllers\RoomController;
 
 
 Route::middleware(['cors'])->group(function ($router) {
+
     Route::get('/2fa/reset', [AuthController::class, 'resendEmail'])->name('2fa.resend');//api resend
-    Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login');//login
     Route::post('/code', [AuthController::class, 'codeEmail'])->name('codeEmail');//api check code 2fe gan vao nut submit
-    Route::post('/register', [AuthController::class, 'register'])->middleware('role:admin');
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::get('/view-account', [AuthController::class, 'userProfile']);
-    Route::get('/all-account', [AuthController::class, 'allAccount'])->middleware('role:admin');
-    Route::get('/account/id={id}', [AuthController::class, 'oneAccount']);
-    Route::post('/update-account/id={id}', [AuthController::class, 'editAccount'])->middleware('role:admin');
-    Route::post('/update-profile', [AuthController::class, 'updateProflie']);
-    Route::post('/changepass', [AuthController::class, 'changePassWord']);
-    Route::post('/hiden/id={id}', [AuthController::class, 'hiden'])->middleware('role:admin');
-    Route::post('/search', [AuthController::class, 'searchAccount'])->middleware('role:admin');
+    Route::post('/register', [AuthController::class, 'register'])->middleware('role:admin');//dang ki
+    Route::post('/logout', [AuthController::class, 'logout']);//logout
+    Route::post('/refresh', [AuthController::class, 'refresh']);//reset token
+    Route::get('/view-account', [AuthController::class, 'userProfile']);//xem 1 account
+    Route::get('/all-account', [AuthController::class, 'allAccount'])->middleware('role:admin');//all account
+    Route::get('/account/id={id}', [AuthController::class, 'oneAccount']);//one account
+    Route::post('/update-account/id={id}', [AuthController::class, 'editAccount'])->middleware('role:admin');//update account
+    Route::post('/update-profile', [AuthController::class, 'updateProflie']);//update profile
+    Route::post('/changepass', [AuthController::class, 'changePassWord']);//change pass
+    Route::post('/hiden/id={id}', [AuthController::class, 'hiden'])->middleware('role:admin');// hiden account
+    Route::get('/search', [AuthController::class, 'searchAccount'])->middleware('role:admin');// tim kiem
 
 });
 Route::middleware(['cors', 'role:personnel'])->group(function ($router) {
-    Route::post('/client/create', [ClientController::class, 'create']);
-    Route::post('/client/edit/id={id}', [ClientController::class, 'edit']);
-    Route::post('/client/hiden/id={id}', [ClientController::class, 'hiden']);
-    Route::get('/client/client-profile', [ClientController::class, 'clientProfile']);
-    Route::get('/client/getclient', [ClientController::class, 'getClient']);
-    Route::get('/client/search', [ClientController::class, 'searchClient']);
+    Route::post('/client/create', [ClientController::class, 'create']);//tao khach hang
+    Route::post('/client/edit/id={id}', [ClientController::class, 'edit']);//update khach hang
+    Route::post('/client/hiden/id={id}', [ClientController::class, 'hiden']);// an khach hang
+    Route::get('/client/client-profile', [ClientController::class, 'clientProfile']);// xem khach hang
+    Route::get('/client/getclient', [ClientController::class, 'getClient']);// xem khach hang
+    Route::get('/client/search', [ClientController::class, 'searchClient']);// tracuu khach hang
 });
 
 //services
 Route::middleware(['cors', 'role:personnel'])->group(function ($router) {
-    Route::post('/service/add', [ServiceController::class, 'create']);
-    Route::post('/service/edit/id={id}', [ServiceController::class, 'edit']);
-    Route::post('/service/hiden/id={id}', [ServiceController::class, 'hiden']);
-    Route::get('/service/service-info', [ServiceController::class, 'serviceInfo']);
-    Route::get('/service/getservice', [ServiceController::class, 'getService']);
-    Route::get('/service/search', [ServiceController::class, 'searchService']);
+    Route::post('/service/add', [ServiceController::class, 'create']);// them dich vu
+    Route::post('/service/edit/id={id}', [ServiceController::class, 'edit']);// sua dich vu
+    Route::post('/service/hiden/id={id}', [ServiceController::class, 'hiden']);// an dich vu
+    Route::get('/service/service-info', [ServiceController::class, 'serviceInfo']);// thong tin dich vu
+    Route::get('/service/getservice', [ServiceController::class, 'getService']);// lay thong tin dich vu
+    Route::get('/service/search', [ServiceController::class, 'searchService']);// tra cuu dich vu
 
 
 });
 
 //rooms
 Route::middleware(['cors'])->group(function ($router) {
-    Route::post('/room/add', [RoomController::class, 'create'])->middleware('role:admin');
-    Route::post('/room/edit/id={id}', [RoomController::class, 'edit'])->middleware('role:admin');
-    Route::get('/room/hiden/id={id}', [RoomController::class, 'hiden']);
-    Route::get('/room/getlist', [RoomController::class, 'roomAll']);
-    Route::get('/room/filter', [RoomController::class, 'filterStatus']);
+    Route::post('/room/add', [RoomController::class, 'create'])->middleware('role:admin');// them phong
+    Route::post('/room/edit/id={id}', [RoomController::class, 'edit'])->middleware('role:admin');// sua phong
+    Route::get('/room/hiden/id={id}', [RoomController::class, 'hiden']);// an phong
+    Route::get('/room/getlist', [RoomController::class, 'roomAll']);// danh sach phong
+    Route::get('/room/filter', [RoomController::class, 'filterStatus']);// loc phong
     Route::get('/room/emptyroom', [RoomController::class, 'emptyroom'])->middleware('role:personnel');
-    Route::get('/room/clearroom/id={id}', [RoomController::class, 'clearroom'])->middleware('role:cleaners');
-
-    Route::get('/room/getid/id={id}', [RoomController::class, 'getId']);
+    Route::get('/room/clearroom/id={id}', [RoomController::class, 'clearroom'])->middleware('role:cleaners');// don phong
+    Route::get('/room/search', [RoomController::class, 'searchRoom']);// seacrh
+    Route::get('/room/getid/id={id}', [RoomController::class, 'getId']);// get phong theo id
 });
 
 //bills
 Route::middleware(['cors', 'role:personnel'])->group(function ($router) {
-    Route::post('/bill/create', [BillController::class, 'create']);
-    Route::post('/bill/edit/id={id}', [BillController::class, 'edit']);
-    Route::get('/bill/hiden/id={id}', [BillController::class, 'hiden']);
-    Route::get('/bill/pay/id={id}', [BillController::class, 'Pay']);
-    Route::post('/bill/checkin', [BillController::class, 'checkin']);
-    Route::get('/bill/bill-info/id={id}', [BillController::class, 'billInfo']);
-    Route::post('/bill/getlistroom', [BillController::class, 'getListTotalRoomBy']);
-    Route::post('/bill/getlistservice', [BillController::class, 'getListTotalServiceBy']);
-    Route::post('/bill/getlist', [BillController::class, 'getListTotalBy']);
+    Route::post('/bill/create', [BillController::class, 'create']);// tao bill
+    Route::post('/bill/edit/id={id}', [BillController::class, 'edit']);// sua bill
+    Route::get('/bill/hiden/id={id}', [BillController::class, 'hiden']);// an bill
+    Route::get('/bill/pay/id={id}', [BillController::class, 'Pay']);// thanh toan
+    Route::post('/bill/checkin', [BillController::class, 'checkin']);// nhan phong
+    Route::get('/bill/bill-info/id={id}', [BillController::class, 'billInfo']);// thong tin bill
+    Route::post('/bill/getlistroom', [BillController::class, 'getListTotalRoomBy']);// danh sach phong theo bill
+    Route::post('/bill/getlistservice', [BillController::class, 'getListTotalServiceBy']);// danh sach dich vu theo bill
+    Route::post('/bill/getlist', [BillController::class, 'getListTotalBy']);// danh sach bill
 
 
     //services theo bill
@@ -100,7 +101,9 @@ Route::middleware(['cors', 'role:personnel'])->group(function ($router) {
     Route::post('/bill/getByMoth', [BillController::class, 'getByMoth']);
 
     Route::post('/notifi/send', [\App\Http\Controllers\SendNotification::class, 'store']);
+    // danh sach bill v2
     Route::get('/bill/billall', [BillController::class, 'listBill']);
+    // view bill v2
     Route::get('/bill/viewbill/id={id}', [BillController::class, 'viewBill']);
 });
 
