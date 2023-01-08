@@ -364,24 +364,23 @@ class AuthController extends Controller
         return response()->json($arr, 201);
     }
     public  function  searchAccount(Request $request){
-        $validator = Validator::make($request->all(), [
-            'key' => 'required',
-        ]);
+       if (!empty($request->key))
+       {
+           $ser=Account::query()->where('email', 'like', "%$request->key%")
+               ->orWhere('name', $request->key)->get();
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-
-        $ser=Account::query()->where('email', 'like', "%$request->key%")
-            ->orWhere('name', $request->key)->get();
-
-        if (!empty($ser)){
-            $arr['data'] = $ser;
-        }else{
-            $arr['message']='Không tìm thấy tài khoản';
-            $arr['data'] = null;
-        }
-        $arr['HTTP Code'] = '200';
+           if (!empty($ser)){
+               $arr['data'] = $ser;
+           }else{
+               $arr['message']='Không tìm thấy tài khoản';
+               $arr['data'] = null;
+           }
+           $arr['HTTP Code'] = '200';
+       }else{
+           $ser=Account::all()??null;
+           $arr['HTTP Code'] = '200';
+           $arr['data'] = $ser;
+       }
 
         return response()->json($arr, 201);
 
