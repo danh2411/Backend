@@ -738,8 +738,8 @@ class BillController extends Controller
             $client = Client::query()->find($bill->client_id);
             $ab = Account::query()->find($bill->account_id);
             $ser = Booked::query()->where('bill_id', $bill->id)->get();
-            $list=[];
-            if(!empty($ser)){
+            $list = [];
+            if (!empty($ser)) {
                 foreach ($ser as $key => $item) {
                     $list[$key]['id'] = $item['id'];
                     $list[$key]['amount'] = $item['amount'];
@@ -764,9 +764,9 @@ class BillController extends Controller
             $bi['price_room'] = $room->price;
             $bi['amount'] = 1;
             $bi['service'] = $list;
-            $bi['total_room_rate'] = $bill-> total_room_rate ;
-            $bi['total_service_fee'] = $bill-> total_service_fee ;
-            $bi['total_money'] = $bill-> total_money ;
+            $bi['total_room_rate'] = $bill->total_room_rate;
+            $bi['total_service_fee'] = $bill->total_service_fee;
+            $bi['total_money'] = $bill->total_money;
 
             $arr = [
                 'HTTP Code' => '200',
@@ -781,5 +781,41 @@ class BillController extends Controller
             ];
         }
         return response()->json($arr, 200);
+    }
+
+    public function staticRoom()
+    {
+
+        $bill = Bill::query()->where('status', 2)->get();
+        if (!empty($bill)) {
+            $da = date("Y-m-d", now()->timestamp);
+            $date = Carbon::parse($da)->timestamp;
+            $da = [];
+
+            foreach ($bill as $key => $as) {
+                $to = $as->day_out;
+                $to = $as->day_out;
+
+                if ($date - $to < 2592000) {
+                $da[$as->room_id][$key] = $as->total_room_rate;
+                $total[$as->room_id]['id']= $as->room_id;
+                $total[$as->room_id]['total'] = array_sum($da[$as->room_id]);
+
+                }
+            }
+
+            foreach ($total as $key=>$value){
+
+                $room=Room::query()->find($value['id']);
+                $total[$room->id]['name']=$room->name_room;
+            }
+
+            $arr = [
+                'HTTP Code' => '200',
+                'message' => 'Total money 30day',
+                'data' => $total,
+            ];
+            return response()->json($arr, 200);
+        }
     }
 }

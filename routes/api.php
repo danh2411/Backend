@@ -105,5 +105,6 @@ Route::middleware(['cors', 'role:personnel'])->group(function ($router) {
     Route::get('/bill/billall', [BillController::class, 'listBill']);
     // view bill v2
     Route::get('/bill/viewbill/id={id}', [BillController::class, 'viewBill']);
+    Route::get('/bill/viewsta', [BillController::class, 'staticRoom']);
 });
 
