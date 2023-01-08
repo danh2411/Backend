@@ -797,9 +797,12 @@ class BillController extends Controller
                 $to = $as->day_out;
 
                 if ($date - $to < 2592000) {
-                $da[$as->room_id][$key] = $as->total_room_rate;
-                $total[$as->room_id]['id']= $as->room_id;
-                $total[$as->room_id]['total'] = array_sum($da[$as->room_id]);
+                    $room=Room::query()->find($as->room_id);
+
+                $da[$room->name_room][$key] = $as->total_room_rate;
+
+                $total[$room->name_room]['id']= $as->room_id;
+                $total[$room->name_room]['total'] = array_sum(   $da[$room->name_room]);
 
                 }
             }
@@ -807,7 +810,7 @@ class BillController extends Controller
             foreach ($total as $key=>$value){
 
                 $room=Room::query()->find($value['id']);
-                $total[$room->id]['name']=$room->name_room;
+                $total[$room->name_room]['name']=$room->name_room;
             }
 
             $arr = [
