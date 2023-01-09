@@ -807,16 +807,18 @@ class BillController extends Controller
                 }
             }
 
-            foreach ($total as $key=>$value){
+                foreach ($total as $key=>$value){
 
                 $room=Room::query()->find($value['id']);
-                $total[$room->name_room]['name']=$room->name_room;
+
+                    $ro[$key]= $total[$room->name_room]['total'];
+
             }
 
             $arr = [
                 'HTTP Code' => '200',
                 'message' => 'Total money 30day',
-                'data' => $total,
+                'data' => $ro,
             ];
             return response()->json($arr, 200);
         }
