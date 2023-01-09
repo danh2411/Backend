@@ -574,8 +574,8 @@ class BillController extends Controller
 
             $as = Services::query()->where('id', $check->services_id)->first();
 
-            $total = $bill->total_money - $as->price;
-            $se = $bill->total_service_fee - $as->price;
+            $total = $bill->total_money - $as->price*$check->amount;
+            $se = $bill->total_service_fee - $as->price*$check->amount;
 
             Bill::query()->where([['id', $request->bill], ['status', 1]])->update([
                 'total_service_fee' => $se,
