@@ -274,7 +274,7 @@ class BillController extends Controller
         $bill = Bill::query()->where('id', $id)->first();
 
         if (!empty($bill)) {
-            $status = $bill->status === 1 ? 2 : 3;
+            $status = $bill->status == 1 ? 2 : 3;
             $user = Bill::where('id', $id)->update(
                 ['status' => $status]
             );
